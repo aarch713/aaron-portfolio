@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #0b0b10;
+  --surface: #15151f;
+  --line: #26263a;
+  --bone: #f2efe9;
+  --muted: #8a8aa0;
+  --current-1: #7c5cff;
+  --current-2: #3ee6ff;
+
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --text-hero: clamp(3rem, 1rem + 9vw, 8.5rem);
+  --text-h2: clamp(2rem, 1rem + 4vw, 4.5rem);
+  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+
+  --space-section: clamp(5rem, 3rem + 8vw, 12rem);
+
+  --dur-fast: 150ms;
+  --dur: 300ms;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-bone: var(--bone);
+  --color-muted: var(--muted);
+  --color-current-1: var(--current-1);
+  --color-current-2: var(--current-2);
+  --font-sans: var(--font-grotesk), system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+html {
+  background: var(--ink);
+  color: var(--bone);
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  font-family: var(--font-grotesk), system-ui, sans-serif;
+  font-size: var(--text-base);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--current-1);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--current-2);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Film grain — fixed overlay, pure CSS noise via SVG data URI */
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+}
+
+/* Accent gradient text helper */
+.text-current-gradient {
+  background: linear-gradient(100deg, var(--current-1), var(--current-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

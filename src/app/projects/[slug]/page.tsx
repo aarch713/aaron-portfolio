@@ -23,12 +23,14 @@ export async function generateMetadata({
   const project = projects.find((entry) => entry.slug === slug);
   if (!project) return {};
 
-  const title = `${project.title} — Aaron Chai`;
+  // Bare title: the root layout's `%s — Aaron Chai` template adds the suffix.
   return {
-    title,
+    title: project.title,
     description: project.tagline,
+    alternates: { canonical: `/projects/${slug}` },
     openGraph: {
-      title,
+      // The title template only applies to <title>, so suffix OG explicitly.
+      title: `${project.title} — Aaron Chai`,
       description: project.tagline,
       type: "article",
     },

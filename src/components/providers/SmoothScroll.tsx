@@ -2,6 +2,7 @@
 
 import { useEffect, type ReactNode } from "react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { loadGsap } from "@/lib/motion";
 
 const LENIS_LERP = 0.1;
 
@@ -25,15 +26,13 @@ export function SmoothScroll({ children }: SmoothScrollProps) {
     let teardown: (() => void) | undefined;
 
     (async () => {
-      const [{ default: Lenis }, { gsap }, { ScrollTrigger }] =
-        await Promise.all([
-          import("lenis"),
-          import("gsap"),
-          import("gsap/ScrollTrigger"),
-        ]);
+      // loadGsap() shares one gsap+ScrollTrigger chunk request with every
+      // animation component, kicked off as early as this effect runs.
+      const [{ default: Lenis }, { gsap, ScrollTrigger }] = await Promise.all([
+        import("lenis"),
+        loadGsap(),
+      ]);
       if (cancelled) return;
-
-      gsap.registerPlugin(ScrollTrigger);
 
       // CSS `scroll-behavior: smooth` fights Lenis on programmatic scrolls;
       // neutralize it only while Lenis is active, restore on teardown.
@@ -41,7 +40,10 @@ export function SmoothScroll({ children }: SmoothScrollProps) {
       const previousScrollBehavior = rootStyle.scrollBehavior;
       rootStyle.scrollBehavior = "auto";
 
-      const lenis = new Lenis({ lerp: LENIS_LERP });
+      // `anchors: true` lets Lenis own in-page anchor navigation — without
+      // it, a native anchor jump gets reverted by the next ticker frame
+      // while a smooth scroll is still settling.
+      const lenis = new Lenis({ lerp: LENIS_LERP, anchors: true });
       lenis.on("scroll", () => ScrollTrigger.update());
 
       const onTick = (time: number) => lenis.raf(time * 1000);

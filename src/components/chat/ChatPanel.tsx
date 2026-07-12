@@ -33,21 +33,29 @@ const ERROR_COPY =
 const MAX_HISTORY = 20;
 const MAX_MESSAGE_CHARS = 1000;
 
-const FOCUSABLE_SELECTOR =
-  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+/* Auto-scroll only fights the user when they've scrolled up; within this
+ * distance of the bottom we treat them as "following along". */
+const NEAR_BOTTOM_PX = 80;
 
 function toPayload(history: ChatMessage[]): { role: Role; content: string }[] {
-  return history
+  const sliced = history
     .filter((m) => m.content.trim().length > 0)
-    .slice(-MAX_HISTORY)
+    .slice(-MAX_HISTORY);
+  /* Mirror the server's normalization: the Messages API requires the first
+   * turn to be from the user, and slice(-N) can cut mid-conversation. */
+  const firstUserIndex = sliced.findIndex((m) => m.role === "user");
+  if (firstUserIndex === -1) return [];
+  return sliced
+    .slice(firstUserIndex)
     .map((m) => ({ role: m.role, content: m.content.slice(0, MAX_MESSAGE_CHARS) }));
 }
 
 /**
- * Slide-up chat panel: focus-trapped dialog with a streaming message list.
- * Talks to POST /api/chat — a JSON body means a friendly fallback (rate
- * limit / missing key / daily cap); anything else is a plain-text stream
- * of deltas appended live to the last assistant message.
+ * Slide-up chat panel: a non-modal corner dialog with a streaming message
+ * list (the rest of the page stays interactive). Talks to POST /api/chat —
+ * a JSON body means a friendly fallback (rate limit / missing key / daily
+ * cap); anything else is a plain-text stream of deltas appended live to
+ * the last assistant message.
  */
 export function ChatPanel({ onClose }: { onClose: () => void }) {
   const reducedMotion = useReducedMotion();
@@ -56,9 +64,11 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
 
-  const panelRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const closedRef = useRef(false);
+  const stickToBottomRef = useRef(true);
 
   /* Enter transition: paint one hidden frame, then flip to visible.
    * Double rAF guarantees the browser commits the initial state first. */
@@ -81,13 +91,33 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
     textareaRef.current?.focus();
   }, []);
 
-  /* Keep the newest message in view as deltas stream in. */
+  /* Abort any in-flight stream when the panel closes/unmounts so upstream
+   * generation stops and no state updates land on an unmounted component.
+   * (closedRef is reset on mount for StrictMode's mount-unmount-mount.) */
+  useEffect(() => {
+    closedRef.current = false;
+    return () => {
+      closedRef.current = true;
+      abortRef.current?.abort();
+    };
+  }, []);
+
+  /* Keep the newest message in view as deltas stream in — but only when
+   * the user was already near the bottom, so scrolling up to re-read
+   * earlier answers isn't fought by the auto-scroll. */
   useEffect(() => {
     const list = listRef.current;
-    if (list) {
+    if (list && stickToBottomRef.current) {
       list.scrollTop = list.scrollHeight;
     }
   }, [messages]);
+
+  function handleListScroll() {
+    const list = listRef.current;
+    if (!list) return;
+    stickToBottomRef.current =
+      list.scrollHeight - list.scrollTop - list.clientHeight < NEAR_BOTTOM_PX;
+  }
 
   const appendOrReplaceAssistant = useCallback(
     (content: string, withPdfLink: boolean) => {
@@ -113,11 +143,15 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
       setInput("");
       setIsStreaming(true);
 
+      const controller = new AbortController();
+      abortRef.current = controller;
+
       try {
         const response = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ messages: toPayload(history) }),
+          signal: controller.signal,
         });
 
         const contentType = response.headers.get("content-type") ?? "";
@@ -126,6 +160,7 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
             fallback?: string;
             error?: string;
           };
+          if (closedRef.current) return;
           appendOrReplaceAssistant(data.fallback ?? ERROR_COPY, true);
           return;
         }
@@ -134,14 +169,18 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
           throw new Error(`Chat API responded ${response.status}`);
         }
 
+        if (closedRef.current) return;
         setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
+        let receivedText = false;
         for (;;) {
           const { done, value } = await reader.read();
           if (done) break;
+          if (closedRef.current) return;
           const chunk = decoder.decode(value, { stream: true });
           if (!chunk) continue;
+          receivedText = true;
           setMessages((prev) => {
             const last = prev[prev.length - 1];
             if (!last || last.role !== "assistant") return prev;
@@ -151,37 +190,32 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
             ];
           });
         }
-      } catch {
+        /* A stream that ends without a single delta would otherwise leave
+         * a blank bubble — swap it for a friendly retry message. */
+        if (!receivedText && !closedRef.current) {
+          appendOrReplaceAssistant(ERROR_COPY, true);
+        }
+      } catch (error) {
+        const isAbort = error instanceof Error && error.name === "AbortError";
+        if (isAbort || closedRef.current) return;
         appendOrReplaceAssistant(ERROR_COPY, true);
       } finally {
-        setIsStreaming(false);
-        textareaRef.current?.focus();
+        if (!closedRef.current) {
+          setIsStreaming(false);
+          textareaRef.current?.focus();
+        }
       }
     },
     [appendOrReplaceAssistant, isStreaming, messages],
   );
 
+  /* Non-modal dialog: no focus trap (the background stays interactive, so
+   * Tab may leave the panel), but ESC still closes it. Focus returns to
+   * the trigger via ChatWidget on close. */
   function handlePanelKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     if (event.key === "Escape") {
       event.stopPropagation();
       onClose();
-      return;
-    }
-    if (event.key !== "Tab") return;
-    const panel = panelRef.current;
-    if (!panel) return;
-    const focusables = Array.from(
-      panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
-    );
-    if (focusables.length === 0) return;
-    const first = focusables[0];
-    const last = focusables[focusables.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
     }
   }
 
@@ -201,9 +235,7 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
 
   return (
     <div
-      ref={panelRef}
       role="dialog"
-      aria-modal="true"
       aria-labelledby="chat-panel-title"
       onKeyDown={handlePanelKeyDown}
       className={`fixed right-4 bottom-4 z-50 flex h-[min(70vh,32rem)] w-[min(92vw,26rem)] flex-col overflow-hidden rounded-xl border border-line bg-surface shadow-2xl ${motionClasses} ${stateClasses}`}
@@ -229,6 +261,7 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
         ref={listRef}
         aria-live="polite"
         role="log"
+        onScroll={handleListScroll}
         className="flex flex-1 flex-col gap-3 overflow-y-auto p-4"
       >
         {messages.length === 0 ? (
@@ -263,12 +296,15 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
                 className="max-w-[85%] self-start text-sm whitespace-pre-wrap text-muted"
               >
                 {message.content === "" && isStreaming ? (
-                  <span
-                    aria-label="Thinking"
-                    className={reducedMotion ? "" : "animate-pulse"}
-                  >
-                    &hellip;
-                  </span>
+                  <>
+                    <span
+                      aria-hidden="true"
+                      className={reducedMotion ? "" : "animate-pulse"}
+                    >
+                      &hellip;
+                    </span>
+                    <span className="sr-only">Thinking</span>
+                  </>
                 ) : (
                   message.content
                 )}

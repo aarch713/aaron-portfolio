@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { z } from "zod";
 import { contactSchema } from "@/lib/validation";
-import { rateLimit } from "@/lib/rate-limit";
+import { dailyCap, rateLimit, sanitizeHeaderText } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -10,6 +10,10 @@ export const runtime = "nodejs";
 const MIN_FILL_TIME_MS = 3_000;
 const RATE_LIMIT_MAX = 5;
 const RATE_LIMIT_WINDOW_MS = 15 * 60_000;
+/** Global sends per UTC day — keeps one polite attacker from burning
+ * Resend's 100/day free quota across many IPs. */
+const DAILY_CAP_NAME = "contact";
+const DAILY_CAP_MAX = 50;
 
 const OFFLINE_ERROR = "Form is offline — email aarch713@gmail.com directly.";
 const FALLBACK_TO_EMAIL = "aarch713@gmail.com";
@@ -54,19 +58,27 @@ export async function POST(request: Request): Promise<NextResponse> {
     );
   }
 
+  // Global daily cap: after the per-IP check so throttled IPs can't burn it.
+  if (!dailyCap(DAILY_CAP_NAME, DAILY_CAP_MAX)) {
+    return NextResponse.json({ error: OFFLINE_ERROR }, { status: 503 });
+  }
+
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: OFFLINE_ERROR }, { status: 503 });
   }
+
+  const safeName = sanitizeHeaderText(name);
+  const safeEmail = sanitizeHeaderText(email);
 
   try {
     const resend = new Resend(apiKey);
     const { error } = await resend.emails.send({
       from: "Portfolio <onboarding@resend.dev>",
       to: process.env.CONTACT_TO_EMAIL ?? FALLBACK_TO_EMAIL,
-      replyTo: email,
-      subject: `Portfolio contact from ${name}`,
-      text: `From: ${name} <${email}>\n\n${message}`,
+      replyTo: safeEmail,
+      subject: `Portfolio contact from ${safeName}`,
+      text: `From: ${safeName} <${safeEmail}>\n\n${message}`,
     });
     if (error) {
       return NextResponse.json({ error: OFFLINE_ERROR }, { status: 502 });

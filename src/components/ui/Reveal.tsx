@@ -2,7 +2,7 @@
 
 import { useLayoutEffect, useRef, type ReactNode } from "react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { EASE } from "@/lib/motion";
+import { EASE, loadGsap } from "@/lib/motion";
 
 const REVEAL_Y_DEFAULT = 32;
 const REVEAL_DURATION = 0.9;
@@ -24,9 +24,11 @@ interface GsapContextLike {
  * Enter-on-scroll reveal wrapper.
  *
  * Server-rendered output is fully visible (no CSS opacity-0), so content is
- * readable with JS disabled. On the client, useLayoutEffect hides the element
- * before first paint (unless reduced motion is preferred), then GSAP animates
- * it in once when it scrolls to `top 85%`.
+ * readable with JS disabled. On the client, nothing is hidden until the
+ * shared GSAP chunk has actually loaded — the painted page never blanks out
+ * during the fetch. Once loaded, the element is hidden and its ScrollTrigger
+ * tween is created in the same tick; it animates in once at `top 85%`
+ * (elements already in view get their entrance immediately).
  */
 export function Reveal({
   children,
@@ -41,12 +43,8 @@ export function Reveal({
     const el = ref.current;
     if (!el || prefersReducedMotion) return;
 
-    // Hide synchronously before paint. GSAP is loaded async; if it fails,
-    // restoreVisibility() guarantees the content is never left hidden.
-    el.style.opacity = "0";
-    el.style.visibility = "hidden";
-    el.style.transform = `translateY(${y}px)`;
-
+    // Safety net for the load-failure and unmount paths: guarantees the
+    // content is never left hidden.
     const restoreVisibility = () => {
       el.style.opacity = "";
       el.style.visibility = "";
@@ -56,32 +54,26 @@ export function Reveal({
     let cancelled = false;
     let ctx: GsapContextLike | undefined;
 
+    // Nothing is hidden until GSAP has actually loaded — server HTML stays
+    // visible for the whole chunk fetch. Hide + animate in the same tick.
     (async () => {
-      const [{ gsap }, { ScrollTrigger }] = await Promise.all([
-        import("gsap"),
-        import("gsap/ScrollTrigger"),
-      ]);
+      const { gsap } = await loadGsap();
       if (cancelled) return;
 
-      gsap.registerPlugin(ScrollTrigger);
-
       ctx = gsap.context(() => {
-        gsap.fromTo(
-          el,
-          { autoAlpha: 0, y },
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: REVEAL_DURATION,
-            ease: EASE,
-            delay,
-            scrollTrigger: {
-              trigger: el,
-              start: REVEAL_START,
-              once: true,
-            },
+        gsap.set(el, { autoAlpha: 0, y });
+        gsap.to(el, {
+          autoAlpha: 1,
+          y: 0,
+          duration: REVEAL_DURATION,
+          ease: EASE,
+          delay,
+          scrollTrigger: {
+            trigger: el,
+            start: REVEAL_START,
+            once: true,
           },
-        );
+        });
       }, el);
     })().catch(restoreVisibility);
 

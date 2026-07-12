@@ -1,7 +1,11 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { CHAT_CORPUS } from "@/content/chat-corpus";
-import { chatRequestSchema, checkDailyCap } from "@/lib/chat-limits";
+import {
+  chatRequestSchema,
+  checkDailyCap,
+  normalizeMessages,
+} from "@/lib/chat-limits";
 import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -50,6 +54,21 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
+  /* Server-side normalization: drop leading assistant turns, merge
+   * consecutive same-role turns, and reject histories that end on an
+   * assistant message — a trailing assistant turn is a prefill that lets
+   * callers put fabricated claims in the site's voice. */
+  const messages = normalizeMessages(parsed.data.messages);
+  if (!messages) {
+    return NextResponse.json(
+      {
+        error:
+          "Invalid conversation: history must contain a user message and end with one.",
+      },
+      { status: 400 },
+    );
+  }
+
   const ip = clientIp(request);
   if (!rateLimit(`chat:${ip}`, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS)) {
     return NextResponse.json({ fallback: RATE_FALLBACK }, { status: 429 });
@@ -64,20 +83,35 @@ export async function POST(request: Request): Promise<Response> {
     model: MODEL,
     max_tokens: MAX_TOKENS,
     system: SYSTEM,
-    messages: parsed.data.messages,
+    messages,
   });
+
+  /* Await the FIRST upstream event before committing to a streaming
+   * Response: an immediate provider failure (bad key, overload, network)
+   * becomes the JSON fallback instead of a silent empty 200 that renders
+   * as a blank assistant bubble. */
+  const iterator = messageStream[Symbol.asyncIterator]();
+  let firstEvent: Awaited<ReturnType<typeof iterator.next>>;
+  try {
+    firstEvent = await iterator.next();
+  } catch {
+    return NextResponse.json({ fallback: RESTING_FALLBACK }, { status: 200 });
+  }
 
   const encoder = new TextEncoder();
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       try {
-        for await (const event of messageStream) {
+        let result = firstEvent;
+        while (!result.done) {
+          const event = result.value;
           if (
             event.type === "content_block_delta" &&
             event.delta.type === "text_delta"
           ) {
             controller.enqueue(encoder.encode(event.delta.text));
           }
+          result = await iterator.next();
         }
       } catch {
         /* Upstream abort/error mid-stream: end what we have gracefully —

@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 
 export const metadata: Metadata = {
-  title: "Not found — Aaron Chai",
+  // Bare title: the root layout's `%s — Aaron Chai` template adds the suffix.
+  title: "Not found",
   description: "That page doesn't exist.",
 };
 

@@ -6,7 +6,7 @@ import type { Job } from "@/content/types";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { EASE } from "@/lib/motion";
+import { EASE, loadGsap } from "@/lib/motion";
 
 const HEADING_ID = "experience-heading";
 /** Bullets shown before the "+ N more" disclosure. */
@@ -28,9 +28,9 @@ function bulletDelay(index: number): number {
 
 /**
  * Spine node for one job. The gradient fill is rendered fully visible in the
- * server output (no-JS / reduced-motion fallback = every node lit); the
- * timeline effect hides it before first paint and lights it back up with a
- * once-only ScrollTrigger tween as the job enters the viewport.
+ * server output (no-JS / reduced-motion fallback = every node lit); once the
+ * GSAP chunk loads, the timeline effect hides it and lights it back up with
+ * a once-only ScrollTrigger tween as the job enters the viewport.
  */
 function TimelineNode() {
   return (
@@ -125,8 +125,9 @@ function JobEntry({ job }: { job: Job }) {
  * Left spine is a 1px `--line` rule; each job's node fills with the current
  * gradient (transform/opacity only, once) as it scrolls into view. Server
  * output ships every node lit and all content visible — the effect hides the
- * fills pre-paint on the client only when motion is allowed, mirroring the
- * Reveal primitive's no-JS / reduced-motion guarantees.
+ * fills only after the shared GSAP chunk resolves (and only when motion is
+ * allowed), mirroring the Reveal primitive's no-JS / reduced-motion
+ * guarantees.
  */
 export function ExperienceTimeline() {
   const listRef = useRef<HTMLOListElement>(null);
@@ -141,14 +142,8 @@ export function ExperienceTimeline() {
     );
     if (fills.length === 0) return;
 
-    // Hide synchronously before paint. GSAP is loaded async; if it fails,
-    // restoreVisibility() guarantees no node is left unlit.
-    for (const fill of fills) {
-      fill.style.opacity = "0";
-      fill.style.visibility = "hidden";
-      fill.style.transform = "scale(0.4)";
-    }
-
+    // Safety net for the load-failure and unmount paths: guarantees no node
+    // is left unlit.
     const restoreVisibility = () => {
       for (const fill of fills) {
         fill.style.opacity = "";
@@ -160,32 +155,28 @@ export function ExperienceTimeline() {
     let cancelled = false;
     let ctx: GsapContextLike | undefined;
 
+    // Nodes stay lit until GSAP has actually loaded — the server-rendered
+    // timeline never blanks out during the chunk fetch. Hide + animate in
+    // the same tick once ready.
     (async () => {
-      const [{ gsap }, { ScrollTrigger }] = await Promise.all([
-        import("gsap"),
-        import("gsap/ScrollTrigger"),
-      ]);
+      const { gsap } = await loadGsap();
       if (cancelled) return;
 
-      gsap.registerPlugin(ScrollTrigger);
-
       ctx = gsap.context(() => {
+        gsap.set(fills, { autoAlpha: 0, scale: 0.4 });
+
         for (const fill of fills) {
-          gsap.fromTo(
-            fill,
-            { autoAlpha: 0, scale: 0.4 },
-            {
-              autoAlpha: 1,
-              scale: 1,
-              duration: NODE_FILL_DURATION_S,
-              ease: EASE,
-              scrollTrigger: {
-                trigger: fill.closest("[data-timeline-item]") ?? fill,
-                start: NODE_FILL_START,
-                once: true,
-              },
+          gsap.to(fill, {
+            autoAlpha: 1,
+            scale: 1,
+            duration: NODE_FILL_DURATION_S,
+            ease: EASE,
+            scrollTrigger: {
+              trigger: fill.closest("[data-timeline-item]") ?? fill,
+              start: NODE_FILL_START,
+              once: true,
             },
-          );
+          });
         }
       }, list);
     })().catch(restoreVisibility);

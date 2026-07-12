@@ -32,7 +32,9 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
   },
   twitter: { card: "summary_large_image" },
-  alternates: { canonical: "/" },
+  // No alternates here: canonical URLs are defined per page. A layout-level
+  // canonical would be inherited by every child route and point them all at
+  // the home page.
 };
 
 const personJsonLd = {

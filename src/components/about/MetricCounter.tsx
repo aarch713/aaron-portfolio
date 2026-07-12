@@ -3,11 +3,12 @@
 import { useLayoutEffect, useRef } from "react";
 import type { Metric } from "@/content/types";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { EASE } from "@/lib/motion";
+import { EASE, loadGsap } from "@/lib/motion";
 
 const COUNT_DURATION = 1.4;
 const COUNT_START = "top 85%";
-const COMMA_THRESHOLD = 1000;
+/** Count-up step for non-integer targets (e.g. 99.9) so the tween lands exactly. */
+const DECIMAL_SNAP = 0.1;
 const FIGURE_SIZE = "clamp(2.5rem, 2rem + 2vw, 4rem)";
 
 interface MetricCounterProps {
@@ -20,12 +21,9 @@ interface GsapContextLike {
   revert(): void;
 }
 
-/** 2600 → "2,600"; values below 1000 render as plain digits. */
+/** 2600 → "2,600"; 99.9 → "99.9" (never rounded up to "100"). */
 function formatMetricValue(value: number): string {
-  const rounded = Math.round(value);
-  return rounded >= COMMA_THRESHOLD
-    ? rounded.toLocaleString("en-US")
-    : String(rounded);
+  return value.toLocaleString("en-US", { maximumFractionDigits: 1 });
 }
 
 /**
@@ -34,10 +32,12 @@ function formatMetricValue(value: number): string {
  *
  * Server-rendered output is the final value (readable with JS disabled and
  * under reduced motion — the effect exits before loading GSAP). On the
- * client, useLayoutEffect zeroes the number before first paint, then a
- * ScrollTrigger-gated tween counts up in whole-number steps. The animated
- * figure is aria-hidden; a visually-hidden span always carries the final
- * value so assistive tech never hears intermediate numbers.
+ * client, the final value stays visible until the shared GSAP chunk has
+ * loaded; only then is the figure zeroed and its ScrollTrigger-gated tween
+ * created (same tick), counting up in whole-number steps — or 0.1 steps for
+ * decimal targets like 99.9 so the tween lands exactly on the final value.
+ * The animated figure is aria-hidden; a visually-hidden span always carries
+ * the final value so assistive tech never hears intermediate numbers.
  */
 export function MetricCounter({ metric, className }: MetricCounterProps) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -51,10 +51,8 @@ export function MetricCounter({ metric, className }: MetricCounterProps) {
 
     const finalText = formatMetricValue(metric.value);
 
-    // Zero synchronously before paint. GSAP loads async; if it fails,
-    // restoreFinalValue() guarantees the metric is never left at 0.
-    valueEl.textContent = formatMetricValue(0);
-
+    // Safety net for the load-failure and unmount paths: guarantees the
+    // metric is never left at 0.
     const restoreFinalValue = () => {
       valueEl.textContent = finalText;
     };
@@ -62,22 +60,23 @@ export function MetricCounter({ metric, className }: MetricCounterProps) {
     let cancelled = false;
     let ctx: GsapContextLike | undefined;
 
+    // The server-rendered final value stays visible until GSAP has actually
+    // loaded; only then zero the figure + create the tween, in the same tick.
     (async () => {
-      const [{ gsap }, { ScrollTrigger }] = await Promise.all([
-        import("gsap"),
-        import("gsap/ScrollTrigger"),
-      ]);
+      const { gsap } = await loadGsap();
       if (cancelled) return;
 
-      gsap.registerPlugin(ScrollTrigger);
-
       ctx = gsap.context(() => {
+        valueEl.textContent = formatMetricValue(0);
+
         const counter = { value: 0 };
         gsap.to(counter, {
           value: metric.value,
           duration: COUNT_DURATION,
           ease: EASE,
-          snap: { value: 1 },
+          snap: {
+            value: Number.isInteger(metric.value) ? 1 : DECIMAL_SNAP,
+          },
           scrollTrigger: {
             trigger: rootEl,
             start: COUNT_START,

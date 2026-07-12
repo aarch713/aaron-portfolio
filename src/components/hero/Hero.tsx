@@ -4,7 +4,7 @@ import { Fragment, useLayoutEffect, useRef } from "react";
 import { profile } from "@/content/profile";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { EASE, splitChars } from "@/lib/motion";
+import { EASE, loadGsap, splitChars } from "@/lib/motion";
 
 const HEADING_ID = "hero-heading";
 /** The one word of the role line that carries the current gradient. */
@@ -47,11 +47,13 @@ function renderRole(role: string) {
 
 /**
  * Full-viewport intro. Server output is fully visible (no CSS hidden states),
- * so content reads with JS disabled. On the client, useLayoutEffect hides the
- * lines synchronously before first paint, then a single GSAP timeline plays
- * eyebrow → split name chars → role → headline → CTAs → scroll cue. The name
- * split keeps accessibility: splitChars sets aria-label to the original text
- * and marks the char spans aria-hidden. Reduced motion: no effect runs and
+ * so content reads with JS disabled. On the client, useLayoutEffect kicks off
+ * the shared GSAP loader; nothing is hidden until it resolves, so the painted
+ * hero never blanks out during the chunk fetch. Once ready, the lines are
+ * hidden (gsap.set) and a single timeline plays eyebrow → split name chars →
+ * role → headline → CTAs → scroll cue, all in the same tick. The name split
+ * keeps accessibility: splitChars sets aria-label to the original text and
+ * marks the char spans aria-hidden. Reduced motion: no effect runs and
  * everything is visible immediately.
  */
 export function Hero() {
@@ -80,21 +82,17 @@ export function Hero() {
       return;
     }
 
-    // Hide synchronously before paint. GSAP loads async; if anything fails,
-    // restore() guarantees the content is never left hidden.
     const lines = [eyebrow, name, role, headline, ctas, cue];
-    lines.forEach((el) => {
-      el.style.opacity = "0";
-      el.style.visibility = "hidden";
-    });
-
     const originalName = name.textContent ?? "";
     let isSplit = false;
 
+    // Safety net for the load-failure and unmount paths: clear any inline
+    // styles and un-split the name so content is never left hidden.
     const restore = () => {
       lines.forEach((el) => {
         el.style.opacity = "";
         el.style.visibility = "";
+        el.style.transform = "";
       });
       if (isSplit) {
         name.textContent = originalName;
@@ -106,25 +104,31 @@ export function Hero() {
     let cancelled = false;
     let ctx: GsapContextLike | undefined;
 
+    // Nothing is hidden until GSAP has actually loaded — the server-rendered
+    // hero stays visible for the whole async chunk fetch. Once loaded, hide
+    // and animate in the same tick.
     (async () => {
-      const { gsap } = await import("gsap");
+      const { gsap } = await loadGsap();
       if (cancelled) return;
 
       ctx = gsap.context(() => {
         const chars = splitChars(name);
         isSplit = true;
 
-        // Park the chars below their baseline while hidden, then reveal the
-        // heading wrapper — nothing shows until the chars rise in.
+        gsap.set([eyebrow, role, headline], { autoAlpha: 0, y: 18 });
+        // CTAs animate with opacity only (no visibility toggle) so the links
+        // stay keyboard-focusable during the intro.
+        gsap.set(ctas, { opacity: 0, y: 18 });
+        gsap.set(cue, { autoAlpha: 0 });
+        // Park the chars below their baseline; the heading wrapper itself
+        // stays visible so only the chars rise in.
         gsap.set(chars, { yPercent: 110, autoAlpha: 0 });
-        gsap.set(name, { autoAlpha: 1 });
 
-        const enter = { autoAlpha: 0, y: 18 };
         const settle = { autoAlpha: 1, y: 0, duration: LINE_DURATION };
 
         gsap
           .timeline({ defaults: { ease: EASE } })
-          .fromTo(eyebrow, enter, settle, EYEBROW_AT)
+          .to(eyebrow, settle, EYEBROW_AT)
           .to(
             chars,
             {
@@ -135,15 +139,10 @@ export function Hero() {
             },
             NAME_AT,
           )
-          .fromTo(role, enter, settle, ROLE_AT)
-          .fromTo(headline, enter, settle, HEADLINE_AT)
-          .fromTo(ctas, enter, settle, CTAS_AT)
-          .fromTo(
-            cue,
-            { autoAlpha: 0 },
-            { autoAlpha: 1, duration: CUE_FADE_DURATION },
-            CUE_AT,
-          );
+          .to(role, settle, ROLE_AT)
+          .to(headline, settle, HEADLINE_AT)
+          .to(ctas, { opacity: 1, y: 0, duration: LINE_DURATION }, CTAS_AT)
+          .to(cue, { autoAlpha: 1, duration: CUE_FADE_DURATION }, CUE_AT);
 
         if (cueLine) {
           gsap.to(cueLine, {

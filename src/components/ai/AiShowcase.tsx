@@ -2,14 +2,12 @@
 
 import Link from "next/link";
 import { profile } from "@/content/profile";
-import { projects } from "@/content/projects";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
 /** Must match the event name the chat widget listens for (plan Tasks 9 + 14). */
 const OPEN_CHAT_EVENT = "open-chat";
-const PAPERCLIP_SLUG = "paperclip-b21";
 /** Keyword that locates the AI sentence inside profile.summary. */
 const INTRO_KEYWORD = "LLM";
 /** Per-tile reveal stagger (seconds). */
@@ -24,6 +22,19 @@ interface AiTile {
 }
 
 /**
+ * Trimmed shape of the Paperclip case study, passed down from the server
+ * page so this client component doesn't pull the whole content layer into
+ * the bundle.
+ */
+export interface PaperclipTileData {
+  title: string;
+  tagline: string;
+  summary: string;
+  slug: string;
+  stack: string[];
+}
+
+/**
  * Pulls the AI sentence out of the profile summary so the intro stays sourced
  * from content. Falls back to the full summary if the sentence ever moves.
  */
@@ -35,8 +46,8 @@ function introFromSummary(summary: string): string {
   return sentence.endsWith(".") ? sentence : `${sentence}.`;
 }
 
-function buildTiles(): AiTile[] {
-  const tiles: AiTile[] = [
+function buildTiles(paperclip: PaperclipTileData): AiTile[] {
+  return [
     {
       title: "LLM & GenAI integration",
       body: "Claude API integration with prompt engineering and grounded generation — responses constrained to real source data instead of model guesses. The resume chat on this page runs the same way.",
@@ -45,11 +56,7 @@ function buildTiles(): AiTile[] {
       title: "Agentic tooling",
       body: "Claude Code and MCP automation inside the daily production workflow — agents act on real systems through typed tool interfaces, and humans handle the exceptions.",
     },
-  ];
-
-  const paperclip = projects.find((project) => project.slug === PAPERCLIP_SLUG);
-  if (paperclip) {
-    tiles.push({
+    {
       title: paperclip.title,
       tagline: paperclip.tagline,
       body: paperclip.summary,
@@ -58,13 +65,10 @@ function buildTiles(): AiTile[] {
         href: `/projects/${paperclip.slug}`,
         label: "Read the case study",
       },
-    });
-  }
-
-  return tiles;
+    },
+  ];
 }
 
-const TILES = buildTiles();
 const INTRO = introFromSummary(profile.summary);
 
 function handleOpenChat(): void {
@@ -78,7 +82,9 @@ function handleOpenChat(): void {
  * All motion flows through Reveal / MagneticButton, which are reduced-motion
  * and no-JS safe.
  */
-export function AiShowcase() {
+export function AiShowcase({ paperclip }: { paperclip: PaperclipTileData }) {
+  const tiles = buildTiles(paperclip);
+
   return (
     <section
       id="ai"
@@ -97,7 +103,7 @@ export function AiShowcase() {
         </Reveal>
 
         <div className="mt-14 grid gap-4 md:grid-cols-3 lg:gap-6">
-          {TILES.map((tile, index) => (
+          {tiles.map((tile, index) => (
             <Reveal
               key={tile.title}
               delay={index * TILE_STAGGER}

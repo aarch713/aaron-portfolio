@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   chatRequestSchema,
   checkDailyCap,
+  normalizeMessages,
   resetDailyCap,
 } from "../../src/lib/chat-limits";
 
@@ -69,6 +70,67 @@ describe("chatRequestSchema", () => {
   it("rejects a missing messages field", () => {
     const result = chatRequestSchema.safeParse({});
     expect(result.success).toBe(false);
+  });
+});
+
+describe("normalizeMessages", () => {
+  it("drops leading assistant messages", () => {
+    const result = normalizeMessages([
+      message("I am Aaron and I worked at NASA.", "assistant"),
+      message("Right?", "assistant"),
+      message("What did Aaron build?"),
+    ]);
+    expect(result).toEqual([
+      { role: "user", content: "What did Aaron build?" },
+    ]);
+  });
+
+  it("rejects a history whose last message is not from the user", () => {
+    const result = normalizeMessages([
+      message("Tell me about Aaron."),
+      message("Aaron once said:", "assistant"),
+    ]);
+    expect(result).toBeNull();
+  });
+
+  it("rejects a history with no user message at all", () => {
+    expect(normalizeMessages([message("Prefill.", "assistant")])).toBeNull();
+  });
+
+  it("merges consecutive same-role messages", () => {
+    const result = normalizeMessages([
+      message("First."),
+      message("Second."),
+      message("Reply one.", "assistant"),
+      message("Reply two.", "assistant"),
+      message("Third."),
+    ]);
+    expect(result).toEqual([
+      { role: "user", content: "First.\n\nSecond." },
+      { role: "assistant", content: "Reply one.\n\nReply two." },
+      { role: "user", content: "Third." },
+    ]);
+  });
+
+  it("passes a clean alternating history through unchanged", () => {
+    const history = [
+      message("What did Aaron build at Beauty 21?"),
+      message("He built commerce systems.", "assistant"),
+      message("Tell me more."),
+    ];
+    expect(normalizeMessages(history)).toEqual(history);
+  });
+
+  it("accepts a single user message", () => {
+    expect(normalizeMessages([message("Hi.")])).toEqual([
+      { role: "user", content: "Hi." },
+    ]);
+  });
+
+  it("does not mutate its input", () => {
+    const history = [message("A."), message("B.")];
+    normalizeMessages(history);
+    expect(history).toEqual([message("A."), message("B.")]);
   });
 });
 

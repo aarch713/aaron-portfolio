@@ -1,6 +1,13 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { contactSchema } from "../../src/lib/validation";
-import { rateLimit, resetRateLimits } from "../../src/lib/rate-limit";
+import {
+  dailyCap,
+  MAX_RATE_LIMIT_KEYS,
+  rateLimit,
+  resetDailyCaps,
+  resetRateLimits,
+  sanitizeHeaderText,
+} from "../../src/lib/rate-limit";
 
 const validPayload = {
   name: "Jane Doe",
@@ -106,5 +113,88 @@ describe("rateLimit", () => {
     expect(rateLimit("k", MAX, WINDOW_MS, T0 + WINDOW_MS + 1)).toBe(true);
     // Now three live timestamps again — blocked.
     expect(rateLimit("k", MAX, WINDOW_MS, T0 + WINDOW_MS + 2)).toBe(false);
+  });
+
+  it("evicts the oldest-inserted keys once the key cap is exceeded", () => {
+    // Fill the oldest key so its bucket is observably "full".
+    expect(rateLimit("oldest", 1, WINDOW_MS, T0)).toBe(true);
+    expect(rateLimit("oldest", 1, WINDOW_MS, T0 + 1)).toBe(false);
+
+    // Insert enough distinct keys to push the Map past the cap.
+    for (let i = 0; i < MAX_RATE_LIMIT_KEYS; i += 1) {
+      rateLimit(`attacker-${i}`, 1, WINDOW_MS, T0 + 2);
+    }
+
+    // "oldest" was evicted — a fresh bucket allows the hit again.
+    expect(rateLimit("oldest", 1, WINDOW_MS, T0 + 3)).toBe(true);
+    // A recently inserted key kept its state — still blocked.
+    expect(
+      rateLimit(`attacker-${MAX_RATE_LIMIT_KEYS - 1}`, 1, WINDOW_MS, T0 + 3),
+    ).toBe(false);
+  });
+});
+
+describe("dailyCap", () => {
+  const NOON_UTC = Date.UTC(2026, 6, 12, 12, 0, 0);
+
+  beforeEach(() => {
+    resetDailyCaps();
+  });
+
+  it("allows requests up to the limit, then blocks", () => {
+    for (let i = 0; i < 3; i += 1) {
+      expect(dailyCap("contact", 3, NOON_UTC)).toBe(true);
+    }
+    expect(dailyCap("contact", 3, NOON_UTC)).toBe(false);
+    expect(dailyCap("contact", 3, NOON_UTC)).toBe(false);
+  });
+
+  it("keeps blocking within the same UTC day", () => {
+    const morning = Date.UTC(2026, 6, 12, 0, 1, 0);
+    const night = Date.UTC(2026, 6, 12, 23, 59, 0);
+    expect(dailyCap("contact", 2, morning)).toBe(true);
+    expect(dailyCap("contact", 2, morning)).toBe(true);
+    expect(dailyCap("contact", 2, night)).toBe(false);
+  });
+
+  it("resets when the UTC day rolls over", () => {
+    const beforeMidnight = Date.UTC(2026, 6, 12, 23, 59, 0);
+    const afterMidnight = Date.UTC(2026, 6, 13, 0, 1, 0);
+    expect(dailyCap("contact", 1, beforeMidnight)).toBe(true);
+    expect(dailyCap("contact", 1, beforeMidnight)).toBe(false);
+    expect(dailyCap("contact", 1, afterMidnight)).toBe(true);
+  });
+
+  it("tracks named counters independently", () => {
+    expect(dailyCap("contact", 1, NOON_UTC)).toBe(true);
+    expect(dailyCap("contact", 1, NOON_UTC)).toBe(false);
+    expect(dailyCap("other", 1, NOON_UTC)).toBe(true);
+  });
+
+  it("resetDailyCaps clears the counters", () => {
+    expect(dailyCap("contact", 1, NOON_UTC)).toBe(true);
+    expect(dailyCap("contact", 1, NOON_UTC)).toBe(false);
+    resetDailyCaps();
+    expect(dailyCap("contact", 1, NOON_UTC)).toBe(true);
+  });
+});
+
+describe("sanitizeHeaderText", () => {
+  it("replaces CR/LF header-injection attempts with spaces", () => {
+    expect(sanitizeHeaderText("Jane\r\nBcc: evil@example.com")).toBe(
+      "Jane Bcc: evil@example.com",
+    );
+  });
+
+  it("strips other control characters", () => {
+    expect(sanitizeHeaderText("Ja\x00ne\tDoe\x1f\x7f")).toBe("Ja ne Doe");
+  });
+
+  it("collapses runs of whitespace and trims", () => {
+    expect(sanitizeHeaderText("  Jane   \n\n  Doe  ")).toBe("Jane Doe");
+  });
+
+  it("leaves ordinary names untouched", () => {
+    expect(sanitizeHeaderText("Jane Doe")).toBe("Jane Doe");
   });
 });

@@ -1,7 +1,14 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ChatPanel } from "./ChatPanel";
+
+/* Loaded on first open so the panel's code stays out of the root layout
+ * chunk — the widget ships on every page, the panel only when used. */
+const ChatPanel = dynamic(
+  () => import("./ChatPanel").then((mod) => mod.ChatPanel),
+  { ssr: false },
+);
 
 /**
  * Floating "Ask my resume" trigger, fixed bottom-right. Opens the ChatPanel

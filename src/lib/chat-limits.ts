@@ -19,6 +19,46 @@ export const chatRequestSchema = z.object({
 
 export type ChatRequest = z.infer<typeof chatRequestSchema>;
 
+/** One turn of chat history, as accepted at the /api/chat boundary. */
+export interface ChatTurn {
+  role: "user" | "assistant";
+  content: string;
+}
+
+/**
+ * Normalizes validated history into the shape the Anthropic Messages API
+ * requires, and closes the assistant-prefill hole:
+ * - drops leading assistant messages (the API rejects a history that does
+ *   not start with a user turn)
+ * - merges consecutive same-role messages into a single turn
+ * - returns null when there is no user message, or when the final message
+ *   is not from the user — a trailing assistant message acts as a prefill
+ *   that lets callers force fabricated claims in the site's voice.
+ *
+ * Pure function; never mutates its input.
+ */
+export function normalizeMessages(
+  messages: readonly ChatTurn[],
+): ChatTurn[] | null {
+  const firstUserIndex = messages.findIndex((m) => m.role === "user");
+  if (firstUserIndex === -1) return null;
+
+  const merged: ChatTurn[] = [];
+  for (const message of messages.slice(firstUserIndex)) {
+    const last = merged[merged.length - 1];
+    if (last && last.role === message.role) {
+      merged[merged.length - 1] = {
+        role: last.role,
+        content: `${last.content}\n\n${message.content}`,
+      };
+    } else {
+      merged.push({ role: message.role, content: message.content });
+    }
+  }
+
+  return merged[merged.length - 1]?.role === "user" ? merged : null;
+}
+
 const MS_PER_UTC_DAY = 86_400_000;
 const DEFAULT_DAILY_LIMIT = 200;
 

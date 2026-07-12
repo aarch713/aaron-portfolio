@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { projects } from "@/content/projects";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { ProjectCard } from "./ProjectCard";
+import { ProjectCard, type ProjectCardData } from "./ProjectCard";
 
 /**
  * The rail (pin + horizontal scrub) only runs on desktop without a reduced-
@@ -25,8 +24,11 @@ interface GsapMatchMediaLike {
  * reduced motion, no JS): a plain vertical stack — the horizontal layout and
  * its native-scroll fallback are pure CSS, so nothing depends on JS to be
  * readable.
+ *
+ * Receives trimmed card data from the server page instead of importing the
+ * content layer, keeping case-study copy out of the client bundle.
  */
-export function ProjectsRail() {
+export function ProjectsRail({ items }: { items: ProjectCardData[] }) {
   const sectionRef = useRef<HTMLElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLUListElement>(null);
@@ -132,9 +134,9 @@ export function ProjectsRail() {
           ref={trackRef}
           className="relative mx-auto grid w-full max-w-6xl gap-6 px-6 motion-safe:lg:mx-0 motion-safe:lg:flex motion-safe:lg:w-max motion-safe:lg:max-w-none motion-safe:lg:items-stretch motion-safe:lg:gap-8 motion-safe:lg:px-[max(1.5rem,calc((100vw_-_72rem)/2_+_1.5rem))]"
         >
-          {projects.map((project, index) => (
-            <li key={project.slug} className="motion-safe:lg:shrink-0">
-              <ProjectCard project={project} index={index} />
+          {items.map((item, index) => (
+            <li key={item.slug} className="motion-safe:lg:shrink-0">
+              <ProjectCard item={item} index={index} />
             </li>
           ))}
         </ul>

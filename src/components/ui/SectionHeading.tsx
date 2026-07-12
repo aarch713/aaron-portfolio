@@ -15,7 +15,7 @@ interface SectionHeadingProps {
  */
 export function SectionHeading({ eyebrow, title, id }: SectionHeadingProps) {
   return (
-    <div id={id}>
+    <div>
       <Reveal>
         <p className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.25em] text-muted">
           <span
@@ -28,7 +28,10 @@ export function SectionHeading({ eyebrow, title, id }: SectionHeadingProps) {
           />
           {eyebrow}
         </p>
+        {/* The aria-labelledby target id lives on the h2 itself so the
+            section's accessible name is the title alone, not eyebrow+title. */}
         <h2
+          id={id}
           className="mt-4 font-medium leading-[1.08] tracking-tight text-bone"
           style={{ fontSize: "var(--text-h2)" }}
         >

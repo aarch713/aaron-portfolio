@@ -62,7 +62,7 @@ export function Footer() {
               href={SOURCE_REPO_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-bone underline-offset-4 transition-colors duration-(--dur) hover:underline"
+              className="text-bone underline decoration-line underline-offset-4 transition-colors duration-(--dur) hover:text-muted"
             >
               view source on GitHub
             </a>

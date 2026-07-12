@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { profile } from "@/content/profile";
-import { contactSchema } from "@/lib/validation";
 
 type FormStatus = "idle" | "pending" | "success" | "error";
 type FieldName = "name" | "email" | "message";
@@ -30,13 +29,31 @@ const INPUT_CLASSES =
 
 const ERROR_CLASSES = "mt-2 text-sm text-current-2";
 
-function isFieldName(value: unknown): value is FieldName {
-  return value === "name" || value === "email" || value === "message";
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/* Client-side mirror of lib/validation contactSchema (name 1..100,
+ * email ..200, message 10..4000). The server route re-validates with the
+ * real zod schema; this exists only for inline feedback and stays
+ * dependency-free so zod never ships in the landing-page bundle. */
+function validateFields(payload: {
+  name: string;
+  email: string;
+  message: string;
+}): FieldErrors {
+  const errors: FieldErrors = {};
+  if (payload.name.length === 0) errors.name = INVALID_COPY.name;
+  else if (payload.name.length > 100) errors.name = TOO_LONG_COPY.name;
+  if (!EMAIL_PATTERN.test(payload.email)) errors.email = INVALID_COPY.email;
+  else if (payload.email.length > 200) errors.email = TOO_LONG_COPY.email;
+  if (payload.message.length < 10) errors.message = INVALID_COPY.message;
+  else if (payload.message.length > 4000)
+    errors.message = TOO_LONG_COPY.message;
+  return errors;
 }
 
 /**
- * Contact form: name / email / message with shared-schema (zod) inline
- * validation, a visually-hidden `company` honeypot, and a mount-time
+ * Contact form: name / email / message with inline validation mirroring the
+ * server's zod schema, a visually-hidden `company` honeypot, and a mount-time
  * `startedAt` timestamp. POSTs JSON to /api/contact; success swaps the form
  * for a confirmation, failure keeps the form filled and offers a mailto
  * fallback.
@@ -61,19 +78,7 @@ export function ContactForm() {
       startedAt: startedAtRef.current,
     };
 
-    const result = contactSchema.safeParse(payload);
-    const errors: FieldErrors = {};
-    if (!result.success) {
-      for (const issue of result.error.issues) {
-        const field = issue.path[0];
-        if (isFieldName(field) && !errors[field]) {
-          errors[field] =
-            issue.code === "too_big"
-              ? TOO_LONG_COPY[field]
-              : INVALID_COPY[field];
-        }
-      }
-    }
+    const errors = validateFields(payload);
     setFieldErrors(errors);
     if (Object.keys(errors).length > 0) {
       setStatus("idle");

@@ -1,13 +1,26 @@
 import Link from "next/link";
-import type { Metric, Project } from "@/content/types";
+
+/**
+ * Trimmed project shape the server page passes down. Client components take
+ * this instead of importing @/content/projects, so the full content layer
+ * (case-study copy, architecture diagrams) stays out of the client bundle.
+ */
+export interface ProjectCardData {
+  slug: string;
+  title: string;
+  tagline: string;
+  stack: string[];
+  /** First (headline) metric only. */
+  metric: { value: number; prefix?: string; suffix: string; label: string };
+}
 
 interface ProjectCardProps {
-  project: Project;
+  item: ProjectCardData;
   /** Zero-based position — projects.ts is ordered by impact, so the printed ordinal is meaningful. */
   index: number;
 }
 
-function formatMetric(metric: Metric): string {
+function formatMetric(metric: ProjectCardData["metric"]): string {
   return `${metric.prefix ?? ""}${metric.value.toLocaleString("en-US")}${metric.suffix}`;
 }
 
@@ -17,13 +30,13 @@ function formatMetric(metric: Metric): string {
  * lift (transform only, gated behind motion-safe). Keyboard focus gets the
  * global :focus-visible outline.
  */
-export function ProjectCard({ project, index }: ProjectCardProps) {
+export function ProjectCard({ item, index }: ProjectCardProps) {
   const ordinal = String(index + 1).padStart(2, "0");
-  const headlineMetric = project.metrics[0];
+  const headlineMetric = item.metric;
 
   return (
     <Link
-      href={`/projects/${project.slug}`}
+      href={`/projects/${item.slug}`}
       className="group flex h-full w-[min(85vw,32rem)] flex-col rounded-lg border border-line bg-surface p-8 transition-[border-color,transform] duration-300 ease-[var(--ease-out-expo)] hover:border-current-1/50 motion-safe:hover:-translate-y-1 motion-safe:focus-visible:-translate-y-1"
     >
       <p className="font-mono text-xs tracking-[0.25em] text-muted">
@@ -31,31 +44,29 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
       </p>
 
       <h3 className="mt-6 text-3xl font-medium leading-tight tracking-tight text-bone">
-        {project.title}
+        {item.title}
       </h3>
-      <p className="mt-3 text-muted">{project.tagline}</p>
+      <p className="mt-3 text-muted">{item.tagline}</p>
 
       <ul aria-label="Stack" className="mt-6 flex flex-wrap gap-2">
-        {project.stack.map((item) => (
+        {item.stack.map((stackItem) => (
           <li
-            key={item}
+            key={stackItem}
             className="rounded-full border border-line px-2 py-0.5 font-mono text-xs text-muted"
           >
-            {item}
+            {stackItem}
           </li>
         ))}
       </ul>
 
-      {headlineMetric && (
-        <p className="mt-8">
-          <span className="text-current-gradient text-4xl font-medium tracking-tight sm:text-5xl">
-            {formatMetric(headlineMetric)}
-          </span>
-          <span className="mt-2 block font-mono text-xs uppercase tracking-[0.2em] text-muted">
-            {headlineMetric.label}
-          </span>
-        </p>
-      )}
+      <p className="mt-8">
+        <span className="text-current-gradient text-4xl font-medium tracking-tight sm:text-5xl">
+          {formatMetric(headlineMetric)}
+        </span>
+        <span className="mt-2 block font-mono text-xs uppercase tracking-[0.2em] text-muted">
+          {headlineMetric.label}
+        </span>
+      </p>
 
       <p className="mt-auto pt-8 font-mono text-xs uppercase tracking-[0.2em] text-muted transition-colors duration-300 group-hover:text-bone">
         Case study <span aria-hidden="true">&rarr;</span>

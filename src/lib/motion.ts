@@ -1,8 +1,47 @@
 /**
- * Motion constants and pure DOM utilities. No React in this file.
+ * Motion constants, the shared GSAP loader, and pure DOM utilities.
+ * No React in this file.
  */
 
 export const EASE = "expo.out";
+
+export interface GsapBundle {
+  gsap: typeof import("gsap").gsap;
+  ScrollTrigger: typeof import("gsap/ScrollTrigger").ScrollTrigger;
+}
+
+let gsapBundlePromise: Promise<GsapBundle> | undefined;
+
+/**
+ * Loads gsap + ScrollTrigger exactly once per page. The Promise.all of the
+ * two dynamic imports starts on the first call and is cached at module scope,
+ * so every consumer (Hero, Reveal, MetricCounter, ExperienceTimeline,
+ * CurrentLine, SmoothScroll) shares a single chunk request. ScrollTrigger is
+ * registered here, once — callers must not register it again.
+ *
+ * IMPORTANT for consumers: never hide server-rendered content before this
+ * promise resolves. Apply hidden states (gsap.set) and build the animation in
+ * the same tick after awaiting, so the painted page stays visible for the
+ * whole chunk fetch on slow networks.
+ */
+export function loadGsap(): Promise<GsapBundle> {
+  if (!gsapBundlePromise) {
+    gsapBundlePromise = Promise.all([
+      import("gsap"),
+      import("gsap/ScrollTrigger"),
+    ]).then(([{ gsap }, { ScrollTrigger }]) => {
+      gsap.registerPlugin(ScrollTrigger);
+      return { gsap, ScrollTrigger };
+    });
+    // A failed load (offline, blocked chunk) must not poison every later
+    // call with a permanently rejected promise — drop the cache so the next
+    // consumer can retry. Callers still see the rejection via their .catch.
+    gsapBundlePromise.catch(() => {
+      gsapBundlePromise = undefined;
+    });
+  }
+  return gsapBundlePromise;
+}
 
 const NBSP = "\u00A0";
 

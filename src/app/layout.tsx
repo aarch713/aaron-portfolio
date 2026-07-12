@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/react";
+import { CurrentLine } from "@/components/current/CurrentLine";
 import "./globals.css";
 
 const grotesk = localFont({
@@ -23,6 +24,7 @@ export default function RootLayout({
     <html lang="en" className={grotesk.variable}>
       <body className="bg-ink text-bone">
         {children}
+        <CurrentLine />
         <div className="grain" aria-hidden="true" />
         <Analytics />
       </body>

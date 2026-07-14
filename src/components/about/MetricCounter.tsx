@@ -106,7 +106,7 @@ export function MetricCounter({ metric, className }: MetricCounterProps) {
         style={{ fontSize: FIGURE_SIZE }}
       >
         <span className="sr-only">{accessibleFigure}</span>
-        <span aria-hidden="true" className="text-current-gradient">
+        <span aria-hidden="true" className="text-current-gradient whitespace-nowrap">
           {metric.prefix}
           <span ref={valueRef}>{finalText}</span>
           {metric.suffix}

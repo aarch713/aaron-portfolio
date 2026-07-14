@@ -95,7 +95,7 @@ export function AiShowcase({ paperclip }: { paperclip: PaperclipTileData }) {
         <SectionHeading
           id="ai-heading"
           eyebrow="AI in production"
-          title="AI-assisted engineering, shipped"
+          title="The lab bench"
         />
 
         <Reveal delay={0.05}>

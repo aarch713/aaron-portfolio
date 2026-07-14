@@ -7,8 +7,8 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { EASE, loadGsap, splitChars } from "@/lib/motion";
 
 const HEADING_ID = "hero-heading";
-/** The one word of the role line that carries the current gradient. */
-const GRADIENT_WORD = "Full-Stack";
+/** The one word of the role line that carries the lacquer gradient. */
+const GRADIENT_WORD = "Ecommerce";
 
 /* Load choreography (seconds). Everything lands inside 1.6s total. */
 const CHAR_STAGGER = 0.02;
@@ -37,7 +37,7 @@ function renderRole(role: string) {
     <Fragment key={`${word}-${index}`}>
       {index > 0 ? " " : null}
       {word === GRADIENT_WORD ? (
-        <span className="text-current-gradient">{word}</span>
+        <span className="text-current-gradient italic">{word}</span>
       ) : (
         word
       )}
@@ -46,15 +46,16 @@ function renderRole(role: string) {
 }
 
 /**
- * Full-viewport intro. Server output is fully visible (no CSS hidden states),
- * so content reads with JS disabled. On the client, useLayoutEffect kicks off
- * the shared GSAP loader; nothing is hidden until it resolves, so the painted
- * hero never blanks out during the chunk fetch. Once ready, the lines are
- * hidden (gsap.set) and a single timeline plays eyebrow → split name chars →
- * role → headline → CTAs → scroll cue, all in the same tick. The name split
- * keeps accessibility: splitChars sets aria-label to the original text and
- * marks the char spans aria-hidden. Reduced motion: no effect runs and
- * everything is visible immediately.
+ * Full-viewport editorial masthead — centered, like a beauty-magazine cover.
+ * Server output is fully visible (no CSS hidden states), so content reads
+ * with JS disabled. On the client, useLayoutEffect kicks off the shared GSAP
+ * loader; nothing is hidden until it resolves, so the painted hero never
+ * blanks out during the chunk fetch. Once ready, the lines are hidden
+ * (gsap.set) and a single timeline plays eyebrow → split name chars → role →
+ * headline → CTAs → scroll cue, all in the same tick. The name split keeps
+ * accessibility: splitChars sets aria-label to the original text and marks
+ * the char spans aria-hidden. Reduced motion: no effect runs and everything
+ * is visible immediately.
  */
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -168,20 +169,22 @@ export function Hero() {
     <section
       ref={sectionRef}
       aria-labelledby={HEADING_ID}
-      className="relative flex min-h-svh flex-col justify-center px-6 py-24 sm:px-10 lg:pl-28 lg:pr-16"
+      className="relative flex min-h-svh flex-col items-center justify-center px-6 py-24 text-center sm:px-10"
     >
-      <div className="mx-auto w-full max-w-6xl">
+      <div className="mx-auto w-full max-w-5xl">
         <p
           ref={eyebrowRef}
-          className="font-mono text-xs uppercase tracking-[0.25em] text-muted"
+          className="flex items-center justify-center gap-3 font-mono text-xs uppercase tracking-[0.3em] text-muted"
         >
+          <span aria-hidden="true" className="swatch" />
           {profile.location} — Open to full-time roles
+          <span aria-hidden="true" className="swatch" style={{ ["--swatch-a" as string]: "var(--gilt)", ["--swatch-b" as string]: "#8a5f14" }} />
         </p>
 
         <h1
           ref={nameRef}
           id={HEADING_ID}
-          className="mt-6 font-medium uppercase leading-[0.95] tracking-tight text-bone"
+          className="font-display mt-8 font-bold leading-[0.98] tracking-tight text-bone"
           style={{ fontSize: "var(--text-hero)" }}
         >
           {profile.name}
@@ -189,16 +192,19 @@ export function Hero() {
 
         <p
           ref={roleRef}
-          className="mt-6 text-2xl font-medium tracking-tight text-bone sm:text-3xl"
+          className="font-display mt-6 text-2xl font-medium tracking-tight text-bone sm:text-3xl"
         >
           {renderRole(profile.role)}
         </p>
 
-        <p ref={headlineRef} className="mt-3 max-w-xl text-muted">
+        <p ref={headlineRef} className="mx-auto mt-4 max-w-xl text-muted">
           {profile.headline}
         </p>
 
-        <div ref={ctasRef} className="mt-10 flex flex-wrap items-center gap-4">
+        <div
+          ref={ctasRef}
+          className="mt-10 flex flex-wrap items-center justify-center gap-4"
+        >
           <MagneticButton href={profile.resumePdf} download>
             Download resume
           </MagneticButton>

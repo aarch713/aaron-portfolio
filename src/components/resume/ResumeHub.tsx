@@ -18,7 +18,7 @@ export function ResumeHub() {
         <Reveal>
           <h2
             id="resume-heading"
-            className="font-medium leading-[1.08] tracking-tight text-bone"
+            className="font-display font-semibold leading-[1.08] tracking-tight text-bone"
             style={{ fontSize: "var(--text-h2)" }}
           >
             Need the one-pager?

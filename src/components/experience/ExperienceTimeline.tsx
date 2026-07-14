@@ -79,7 +79,7 @@ function JobEntry({ job }: { job: Job }) {
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted">
           {job.start} – {job.end} · {job.location}
         </p>
-        <h3 className="mt-3 text-2xl font-medium leading-snug text-bone">
+        <h3 className="font-display mt-3 text-2xl font-semibold leading-snug text-bone">
           {job.company}
           {job.brand ? <span className="text-muted"> · {job.brand}</span> : null}
         </h3>
@@ -197,7 +197,7 @@ export function ExperienceTimeline() {
       <div className="mx-auto w-full max-w-5xl px-6 sm:px-10 lg:px-16">
         <SectionHeading
           eyebrow="Experience"
-          title="Where I've shipped"
+          title="The collection"
           id={HEADING_ID}
         />
         <ol ref={listRef} className="relative mt-16 border-l border-line">

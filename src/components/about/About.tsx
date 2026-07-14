@@ -48,7 +48,7 @@ export function About() {
       className="py-(--space-section)"
     >
       <div className="mx-auto w-full max-w-6xl px-6 sm:px-10 lg:px-20">
-        <SectionHeading eyebrow="About" title="Systems that sell" id={HEADING_ID} />
+        <SectionHeading eyebrow="About" title="Behind the counter" id={HEADING_ID} />
 
         <div className="mt-14 grid gap-14 lg:mt-20 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
@@ -72,7 +72,7 @@ export function About() {
                   }`}
                 >
                   <Reveal delay={index * METRIC_STAGGER}>
-                    <MetricCounter metric={metric} />
+                    <MetricCounter metric={metric} shade={index + 1} />
                   </Reveal>
                 </div>
               ))}

@@ -120,7 +120,7 @@ export function ProjectsRail({ items }: { items: ProjectCardData[] }) {
         <SectionHeading
           id="projects-heading"
           eyebrow="Selected work"
-          title="Built and measured"
+          title="The lineup"
         />
       </div>
 

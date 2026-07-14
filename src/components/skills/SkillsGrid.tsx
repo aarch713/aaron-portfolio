@@ -20,7 +20,7 @@ export function SkillsGrid() {
         <SectionHeading
           id="skills-heading"
           eyebrow="Toolbox"
-          title="What I work with"
+          title="Ingredients"
         />
 
         <div className="mt-14 border-t border-line">

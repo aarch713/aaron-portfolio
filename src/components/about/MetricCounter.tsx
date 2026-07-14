@@ -14,6 +14,9 @@ const FIGURE_SIZE = "clamp(2.5rem, 2rem + 2vw, 4rem)";
 interface MetricCounterProps {
   metric: Metric;
   className?: string;
+  /** 1-based palette position; when given, the shade label reads like a
+   * sequential shade card ("Shade 001") instead of echoing the value. */
+  shade?: number;
 }
 
 /** Minimal structural type so we don't need a static gsap import for typing. */
@@ -26,20 +29,25 @@ function formatMetricValue(value: number): string {
   return value.toLocaleString("en-US", { maximumFractionDigits: 1 });
 }
 
+/** 50 → "050" — the shade number printed on the metric's swatch label. */
+function shadeNumber(value: number): string {
+  return String(Math.round(value)).padStart(3, "0").slice(-3);
+}
+
 /**
- * Oversized mono metric that counts from 0 to its value the first time it
- * scrolls into view.
+ * Metric presented as a shade-card entry: a mono "SHADE NNN" label with a
+ * painted pigment swatch, then the oversized Bodoni figure counting from 0
+ * the first time it scrolls into view.
  *
  * Server-rendered output is the final value (readable with JS disabled and
  * under reduced motion — the effect exits before loading GSAP). On the
  * client, the final value stays visible until the shared GSAP chunk has
  * loaded; only then is the figure zeroed and its ScrollTrigger-gated tween
- * created (same tick), counting up in whole-number steps — or 0.1 steps for
- * decimal targets like 99.9 so the tween lands exactly on the final value.
- * The animated figure is aria-hidden; a visually-hidden span always carries
- * the final value so assistive tech never hears intermediate numbers.
+ * created (same tick). The animated figure is aria-hidden; a visually-hidden
+ * span always carries the final value so assistive tech never hears
+ * intermediate numbers.
  */
-export function MetricCounter({ metric, className }: MetricCounterProps) {
+export function MetricCounter({ metric, className, shade }: MetricCounterProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const valueRef = useRef<HTMLSpanElement>(null);
   const prefersReducedMotion = useReducedMotion();
@@ -102,11 +110,18 @@ export function MetricCounter({ metric, className }: MetricCounterProps) {
   return (
     <div ref={rootRef} className={className}>
       <p
-        className="font-mono font-medium leading-none tracking-tight"
+        aria-hidden="true"
+        className="flex items-center gap-2 font-mono text-[0.625rem] uppercase tracking-[0.25em] text-muted"
+      >
+        <span className="swatch" />
+        Shade {shadeNumber(shade ?? metric.value)}
+      </p>
+      <p
+        className="font-display mt-3 font-semibold leading-none tracking-tight"
         style={{ fontSize: FIGURE_SIZE }}
       >
         <span className="sr-only">{accessibleFigure}</span>
-        <span aria-hidden="true" className="text-current-gradient">
+        <span aria-hidden="true" className="text-current-gradient whitespace-nowrap">
           {metric.prefix}
           <span ref={valueRef}>{finalText}</span>
           {metric.suffix}

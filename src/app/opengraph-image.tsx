@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Aaron Chai — Full-Stack Developer";
+export const alt = "Aaron Chai — Ecommerce Developer";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -8,11 +8,12 @@ export const contentType = "image/png";
 // so the locked design-token values are inlined here (the one allowed
 // exception) — they mirror --ink/--bone/--muted/--current-1/--current-2
 // in globals.css exactly.
-const INK = "#0B0B10";
-const BONE = "#F2EFE9";
-const MUTED = "#8A8AA0";
-const CURRENT_1 = "#7C5CFF";
-const CURRENT_2 = "#3EE6FF";
+const PORCELAIN = "#FBF7F4";
+const PLUM = "#2A1E2F";
+const MUTED = "#7A6470";
+const LACQUER = "#D93664";
+const ROUGE = "#8E2043";
+const GILT = "#B98A2F";
 
 export default function OpengraphImage() {
   return new ImageResponse(
@@ -25,7 +26,7 @@ export default function OpengraphImage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "72px 80px",
-          backgroundColor: INK,
+          backgroundColor: PORCELAIN,
         }}
       >
         <div
@@ -33,43 +34,67 @@ export default function OpengraphImage() {
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
+            alignItems: "center",
+            textAlign: "center",
             flexGrow: 1,
           }}
         >
           <div
             style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 18,
+              fontSize: 26,
+              color: MUTED,
+              letterSpacing: "0.28em",
+              textTransform: "uppercase",
+            }}
+          >
+            <div
+              style={{
+                width: 26,
+                height: 26,
+                borderRadius: "50% 46% 52% 48%",
+                backgroundImage: `linear-gradient(135deg, ${LACQUER}, ${ROUGE})`,
+              }}
+            />
+            Shade 050 · Portfolio
+            <div
+              style={{
+                width: 26,
+                height: 26,
+                borderRadius: "48% 52% 46% 50%",
+                backgroundImage: `linear-gradient(135deg, ${GILT}, #8A5F14)`,
+              }}
+            />
+          </div>
+          <div
+            style={{
+              marginTop: 30,
               fontSize: 130,
               fontWeight: 700,
-              color: BONE,
-              letterSpacing: "-0.03em",
-              lineHeight: 1.05,
+              color: PLUM,
+              letterSpacing: "-0.02em",
+              lineHeight: 1.02,
             }}
           >
             Aaron Chai
           </div>
           <div
             style={{
-              width: 240,
-              height: 8,
-              marginTop: 36,
-              borderRadius: 4,
-              backgroundImage: `linear-gradient(90deg, ${CURRENT_1}, ${CURRENT_2})`,
-            }}
-          />
-          <div
-            style={{
-              marginTop: 30,
+              marginTop: 26,
               fontSize: 46,
               fontWeight: 400,
-              color: BONE,
-              letterSpacing: "-0.01em",
+              color: ROUGE,
             }}
           >
-            Full-Stack Developer
+            Ecommerce Developer
           </div>
         </div>
         <div
           style={{
+            display: "flex",
+            justifyContent: "center",
             fontSize: 28,
             color: MUTED,
             letterSpacing: "0.22em",

@@ -2,6 +2,53 @@ import type { Project } from "./types";
 
 export const projects: Project[] = [
   {
+    slug: "lac-theme-b2b-portal",
+    title: "L.A. Colors Theme & B2B Portal",
+    tagline: "40+-section Shopify design system plus a gated distributor portal",
+    stack: ["Shopify OS 2.0", "Liquid", "Tailwind", "Web Components", "React", "GraphQL", "Metaobjects"],
+    metrics: [
+      { value: 40, suffix: "+", label: "modular theme sections" },
+      { value: 120, suffix: "+", label: "distributor accounts served" },
+      { value: 60, suffix: "%", label: "code duplication cut" },
+    ],
+    summary:
+      "A custom Shopify OS 2.0 theme built as a design system of 40+ modular Liquid/Tailwind/Web Component sections, plus a Locksmith-gated B2B distributor portal with a React component library and GraphQL data layer. It serves 120+ distributor accounts with zero downtime since launch.",
+    caseStudy: {
+      problem:
+        "The storefront ran on an 80-template legacy codebase full of copy-pasted variants — every change had to be made in multiple places, deploys were slow, and accessibility was inconsistent. Meanwhile B2B distributors had no self-service channel at all: wholesale browsing and quote requests ran through email.",
+      approach: [
+        "Designed a Shopify OS 2.0 section library — 40+ modular Liquid/Tailwind/Web Component sections — and migrated the 80-template codebase into it.",
+        "Applied WCAG 2.1 AA contrast and keyboard-navigation standards across every section, resolving 120+ accessibility violations.",
+        "Built the B2B portal behind a Locksmith gate with a reusable React component library, so distributor-only pricing and catalog stay invisible to retail shoppers.",
+        "Implemented a GraphQL data-fetching layer over the Storefront API with metaobject-driven product display, infinite-scroll browsing, and a quote-request wishlist.",
+        "Stood up a branch-per-environment GitHub-to-Shopify CI/CD pipeline with PR previews and automated linting for both storefronts.",
+      ],
+      architecture: `+------------------------------+
+| Shopify OS 2.0 theme         |
+| 40+ Liquid/Tailwind sections |
+| + Web Components             |
++---------------+--------------+
+                |
+                v  (Locksmith gate)
++------------------------------+
+| B2B distributor portal       |
+| React component library      |
++---------------+--------------+
+                v
++------------------------------+
+| GraphQL data layer           |
+| Storefront API + metaobjects |
+| infinite scroll - wishlist   |
++------------------------------+`,
+      results: [
+        "60% cut in code duplication and 45% faster deploy cycles after migrating 80 templates into the section library.",
+        "120+ distributor accounts served by the B2B portal with zero downtime since launch.",
+        "120+ accessibility violations resolved to WCAG 2.1 AA, with zero compliance-related escalations since.",
+        "Deploys cut from a multi-hour manual process to under 20 minutes via the GitHub-to-Shopify CI/CD pipeline.",
+      ],
+    },
+  },
+  {
     slug: "pro-points-loyalty",
     title: "PRO Points Loyalty Program",
     tagline: "End-to-end loyalty system that lifted online sales +50% in six months",
@@ -105,50 +152,6 @@ export const projects: Project[] = [
     },
   },
   {
-    slug: "bv-powerreviews-pipeline",
-    title: "Bazaarvoice to PowerReviews Feed Pipeline",
-    tagline: "Daily CI/CD feed sync that cut catalog lag from 24 hours to under one",
-    stack: ["Node.js", "GitHub Actions", "SFTP", "XML", "Jest"],
-    metrics: [
-      { value: 1, prefix: "<", suffix: " hr", label: "catalog sync lag (from 24 hrs)" },
-      { value: 5, prefix: "<", suffix: " min", label: "failure detection (from 4 hrs)" },
-    ],
-    summary:
-      "An automated daily product-feed pipeline that moves the catalog from Bazaarvoice format to PowerReviews via scheduled GitHub Actions. It replaced a manual export step entirely and cut catalog sync lag from 24 hours to under one hour.",
-    caseStudy: {
-      problem:
-        "Migrating reviews platforms meant the product catalog had to flow from Bazaarvoice-shaped data to PowerReviews' XML feed spec every day. The manual export process introduced up to 24 hours of catalog lag, and when a sync silently failed, nobody found out for around 4 hours — meaning new products showed no reviews on live pages.",
-      approach: [
-        "Built the transform in Node.js with the feed contract pinned down by Jest tests first (TDD), so the PowerReviews XML spec is encoded as executable assertions.",
-        "Scheduled the pipeline as a daily GitHub Actions workflow with secret-managed credentials — no server to maintain, full run history in CI.",
-        "Added exponential-backoff retry around fetch and SFTP delivery, so transient network failures self-heal instead of dropping the day's feed.",
-        "Validated the generated XML against the spec before upload, failing the run loudly rather than shipping a malformed feed.",
-        "Wired Slack failure alerting into the workflow so a broken sync pages a human in minutes, not hours.",
-      ],
-      architecture: `+------------------------------+
-| Bazaarvoice product feed     |
-+---------------+--------------+
-                v
-+------------------------------+
-| GitHub Actions (daily cron)  |
-| fetch -> transform -> XML    |
-| validate -> retry w/ backoff |
-+-------+---------------+------+
-        |               |
-        v               v
-+---------------+  +------------+
-| PowerReviews  |  | Slack      |
-| SFTP ingest   |  | alerting   |
-+---------------+  +------------+`,
-      results: [
-        "Catalog sync lag cut from 24 hours to under 1 hour — same-business-day review indexing on all product pages.",
-        "Failure-detection lag cut from 4 hours to under 5 minutes via Slack alerting on any failed run.",
-        "Manual export step eliminated entirely; the pipeline has a full audit trail in CI run history.",
-        "Feed contract locked in by Jest TDD coverage, so spec regressions fail in CI before they reach production.",
-      ],
-    },
-  },
-  {
     slug: "pim-pipeline",
     title: "PIM Pipeline",
     tagline: "Python pipeline that normalizes 10,000+ product attributes across systems",
@@ -199,49 +202,46 @@ export const projects: Project[] = [
     },
   },
   {
-    slug: "lac-theme-b2b-portal",
-    title: "L.A. Colors Theme & B2B Portal",
-    tagline: "40+-section Shopify design system plus a gated distributor portal",
-    stack: ["Shopify OS 2.0", "Liquid", "Tailwind", "Web Components", "React", "GraphQL", "Metaobjects"],
+    slug: "bv-powerreviews-pipeline",
+    title: "Bazaarvoice to PowerReviews Feed Pipeline",
+    tagline: "Daily CI/CD feed sync that cut catalog lag from 24 hours to under one",
+    stack: ["Node.js", "GitHub Actions", "SFTP", "XML", "Jest"],
     metrics: [
-      { value: 40, suffix: "+", label: "modular theme sections" },
-      { value: 120, suffix: "+", label: "distributor accounts served" },
-      { value: 60, suffix: "%", label: "code duplication cut" },
+      { value: 1, prefix: "<", suffix: " hr", label: "catalog sync lag (from 24 hrs)" },
+      { value: 5, prefix: "<", suffix: " min", label: "failure detection (from 4 hrs)" },
     ],
     summary:
-      "A custom Shopify OS 2.0 theme built as a design system of 40+ modular Liquid/Tailwind/Web Component sections, plus a Locksmith-gated B2B distributor portal with a React component library and GraphQL data layer. It serves 120+ distributor accounts with zero downtime since launch.",
+      "An automated daily product-feed pipeline that moves the catalog from Bazaarvoice format to PowerReviews via scheduled GitHub Actions. It replaced a manual export step entirely and cut catalog sync lag from 24 hours to under one hour.",
     caseStudy: {
       problem:
-        "The storefront ran on an 80-template legacy codebase full of copy-pasted variants — every change had to be made in multiple places, deploys were slow, and accessibility was inconsistent. Meanwhile B2B distributors had no self-service channel at all: wholesale browsing and quote requests ran through email.",
+        "Migrating reviews platforms meant the product catalog had to flow from Bazaarvoice-shaped data to PowerReviews' XML feed spec every day. The manual export process introduced up to 24 hours of catalog lag, and when a sync silently failed, nobody found out for around 4 hours — meaning new products showed no reviews on live pages.",
       approach: [
-        "Designed a Shopify OS 2.0 section library — 40+ modular Liquid/Tailwind/Web Component sections — and migrated the 80-template codebase into it.",
-        "Applied WCAG 2.1 AA contrast and keyboard-navigation standards across every section, resolving 120+ accessibility violations.",
-        "Built the B2B portal behind a Locksmith gate with a reusable React component library, so distributor-only pricing and catalog stay invisible to retail shoppers.",
-        "Implemented a GraphQL data-fetching layer over the Storefront API with metaobject-driven product display, infinite-scroll browsing, and a quote-request wishlist.",
-        "Stood up a branch-per-environment GitHub-to-Shopify CI/CD pipeline with PR previews and automated linting for both storefronts.",
+        "Built the transform in Node.js with the feed contract pinned down by Jest tests first (TDD), so the PowerReviews XML spec is encoded as executable assertions.",
+        "Scheduled the pipeline as a daily GitHub Actions workflow with secret-managed credentials — no server to maintain, full run history in CI.",
+        "Added exponential-backoff retry around fetch and SFTP delivery, so transient network failures self-heal instead of dropping the day's feed.",
+        "Validated the generated XML against the spec before upload, failing the run loudly rather than shipping a malformed feed.",
+        "Wired Slack failure alerting into the workflow so a broken sync pages a human in minutes, not hours.",
       ],
       architecture: `+------------------------------+
-| Shopify OS 2.0 theme         |
-| 40+ Liquid/Tailwind sections |
-| + Web Components             |
-+---------------+--------------+
-                |
-                v  (Locksmith gate)
-+------------------------------+
-| B2B distributor portal       |
-| React component library      |
+| Bazaarvoice product feed     |
 +---------------+--------------+
                 v
 +------------------------------+
-| GraphQL data layer           |
-| Storefront API + metaobjects |
-| infinite scroll - wishlist   |
-+------------------------------+`,
+| GitHub Actions (daily cron)  |
+| fetch -> transform -> XML    |
+| validate -> retry w/ backoff |
++-------+---------------+------+
+        |               |
+        v               v
++---------------+  +------------+
+| PowerReviews  |  | Slack      |
+| SFTP ingest   |  | alerting   |
++---------------+  +------------+`,
       results: [
-        "60% cut in code duplication and 45% faster deploy cycles after migrating 80 templates into the section library.",
-        "120+ distributor accounts served by the B2B portal with zero downtime since launch.",
-        "120+ accessibility violations resolved to WCAG 2.1 AA, with zero compliance-related escalations since.",
-        "Deploys cut from a multi-hour manual process to under 20 minutes via the GitHub-to-Shopify CI/CD pipeline.",
+        "Catalog sync lag cut from 24 hours to under 1 hour — same-business-day review indexing on all product pages.",
+        "Failure-detection lag cut from 4 hours to under 5 minutes via Slack alerting on any failed run.",
+        "Manual export step eliminated entirely; the pipeline has a full audit trail in CI run history.",
+        "Feed contract locked in by Jest TDD coverage, so spec regressions fail in CI before they reach production.",
       ],
     },
   },

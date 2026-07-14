@@ -1,6 +1,8 @@
-# aaronchai.dev — personal portfolio
+# aaronchai.dev — personal portfolio · V2 "Shade Card"
 
-Dark-cinematic scrollytelling portfolio for Aaron Chai (Full-Stack Developer).
+Beauty-lab editorial portfolio for Aaron Chai (Ecommerce Developer) — porcelain
+canvas, Bodoni Moda display, pigment-swatch metrics. One of five design
+versions (see `docs/design-directions.md`; `main` is V1 "The Current").
 Next.js 16 (App Router) · TypeScript · Tailwind v4 · GSAP ScrollTrigger + Lenis ·
 Claude-powered "Ask my resume" chat · Resend-backed contact form.
 

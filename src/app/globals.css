@@ -1,18 +1,27 @@
 @import "tailwindcss";
 
+/*
+ * V2 — "Shade Card" (beauty-lab editorial, light).
+ * The token CONTRACT is shared with every design version: --ink is the page
+ * canvas, --bone the primary text, --surface the card fill, --line the
+ * hairline, --muted the secondary text, --current-1/2 the accent pair.
+ * Here the canvas is porcelain, the text ink-plum, and the accents are
+ * lacquer → deep rouge, with a gilt hairline for shade-card framing.
+ */
 :root {
-  --ink: #0b0b10;
-  --surface: #15151f;
-  --line: #26263a;
-  --bone: #f2efe9;
-  --muted: #8a8aa0;
-  --current-1: #7c5cff;
-  --current-2: #3ee6ff;
+  --ink: #fbf7f4; /* porcelain canvas */
+  --surface: #f4e9e4; /* blush card */
+  --line: #e6d3cb; /* blush hairline */
+  --bone: #2a1e2f; /* ink-plum text */
+  --muted: #7a6470; /* plum-gray secondary */
+  --current-1: #d93664; /* lacquer */
+  --current-2: #8e2043; /* deep rouge */
+  --gilt: #b98a2f; /* gilt accent, sparing */
 
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  --text-hero: clamp(3rem, 1rem + 9vw, 8.5rem);
-  --text-h2: clamp(2rem, 1rem + 4vw, 4.5rem);
+  --text-hero: clamp(2.9rem, 1rem + 8.2vw, 7.75rem);
+  --text-h2: clamp(2rem, 1rem + 4vw, 4.25rem);
   --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
 
   --space-section: clamp(5rem, 3rem + 8vw, 12rem);
@@ -30,7 +39,9 @@
   --color-muted: var(--muted);
   --color-current-1: var(--current-1);
   --color-current-2: var(--current-2);
+  --color-gilt: var(--gilt);
   --font-sans: var(--font-grotesk), system-ui, sans-serif;
+  --font-display: var(--font-bodoni), "Bodoni MT", Didot, serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
@@ -51,6 +62,11 @@ body {
   font-size: var(--text-base);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  /* Soft counter-light: two blush washes, like light on a vanity tray. */
+  background-image:
+    radial-gradient(52rem 30rem at 85% -4rem, rgba(217, 54, 100, 0.07), transparent 70%),
+    radial-gradient(40rem 26rem at -10% 45rem, rgba(185, 138, 47, 0.06), transparent 70%);
+  background-repeat: no-repeat;
 }
 
 ::selection {
@@ -64,21 +80,39 @@ body {
   border-radius: 2px;
 }
 
-/* Film grain — fixed overlay, pure CSS noise via SVG data URI */
-.grain {
-  pointer-events: none;
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 240px 240px;
+/* Display face for headings — editorial Bodoni voice. */
+.font-display {
+  font-family: var(--font-bodoni), "Bodoni MT", Didot, serif;
 }
 
-/* Accent gradient text helper */
+/* Accent gradient text helper (lacquer → rouge). */
 .text-current-gradient {
   background: linear-gradient(100deg, var(--current-1), var(--current-2));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/*
+ * Pigment swatch — the V2 signature. A painted chip of product: an organic
+ * gradient dab with a gloss highlight, used beside metrics and shade labels.
+ */
+.swatch {
+  display: inline-block;
+  width: 1.35rem;
+  height: 1.35rem;
+  flex: none;
+  border-radius: 50% 46% 52% 48% / 52% 48% 54% 46%;
+  background:
+    radial-gradient(120% 120% at 30% 25%, rgba(255, 255, 255, 0.55), transparent 42%),
+    linear-gradient(135deg, var(--swatch-a, var(--current-1)), var(--swatch-b, var(--current-2)));
+  box-shadow:
+    inset 0 -2px 4px rgba(42, 30, 47, 0.22),
+    0 1px 2px rgba(42, 30, 47, 0.18);
+}
+
+/* Larger dab used on metric chips. */
+.swatch-lg {
+  width: 2rem;
+  height: 2rem;
 }

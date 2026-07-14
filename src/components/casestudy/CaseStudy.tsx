@@ -107,7 +107,7 @@ export function CaseStudy({ project }: CaseStudyProps) {
           </Reveal>
           <Reveal delay={HEADER_TITLE_DELAY}>
             <h1
-              className="mt-6 font-medium leading-[1.05] tracking-tight text-bone"
+              className="font-display mt-6 font-semibold leading-[1.05] tracking-tight text-bone"
               style={{ fontSize: TITLE_SIZE }}
             >
               {project.title}
@@ -125,7 +125,7 @@ export function CaseStudy({ project }: CaseStudyProps) {
           {project.metrics.map((metric, metricIndex) => (
             <div key={metric.label} className="p-6 sm:p-8 sm:first:pl-0">
               <Reveal delay={metricIndex * METRIC_STAGGER}>
-                <MetricCounter metric={metric} />
+                <MetricCounter metric={metric} shade={metricIndex + 1} />
               </Reveal>
             </div>
           ))}

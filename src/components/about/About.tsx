@@ -48,7 +48,7 @@ export function About() {
       className="py-(--space-section)"
     >
       <div className="mx-auto w-full max-w-6xl px-6 sm:px-10 lg:px-20">
-        <SectionHeading eyebrow="About" title="Systems that sell" id={HEADING_ID} />
+        <SectionHeading eyebrow="Note A-01" title="General notes" id={HEADING_ID} />
 
         <div className="mt-14 grid gap-14 lg:mt-20 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
@@ -67,7 +67,7 @@ export function About() {
               {profile.metrics.map((metric, index) => (
                 <div
                   key={metric.label}
-                  className={`border-line p-6 sm:p-8 ${
+                  className={`border-line p-5 sm:p-6 ${
                     METRIC_CELL_DIVIDERS[index % METRIC_CELL_DIVIDERS.length]
                   }`}
                 >

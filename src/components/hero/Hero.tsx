@@ -7,17 +7,18 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { EASE, loadGsap, splitChars } from "@/lib/motion";
 
 const HEADING_ID = "hero-heading";
-/** The one word of the role line that carries the current gradient. */
-const GRADIENT_WORD = "Full-Stack";
+/** The one word of the role line that carries the redline gradient. */
+const GRADIENT_WORD = "Backend";
 
-/* Load choreography (seconds). Everything lands inside 1.6s total. */
+/* Load choreography (seconds). Everything lands inside 1.7s total. */
 const CHAR_STAGGER = 0.02;
-const EYEBROW_AT = 0;
-const NAME_AT = 0.1;
-const ROLE_AT = 0.55;
-const HEADLINE_AT = 0.7;
-const CTAS_AT = 0.85;
-const CUE_AT = 1.05;
+const FRAME_AT = 0;
+const NAME_AT = 0.15;
+const DIM_AT = 0.7;
+const ROLE_AT = 0.8;
+const HEADLINE_AT = 0.95;
+const CTAS_AT = 1.1;
+const CUE_AT = 1.3;
 const LINE_DURATION = 0.55;
 const CHAR_DURATION = 0.7;
 const CUE_FADE_DURATION = 0.5;
@@ -46,20 +47,23 @@ function renderRole(role: string) {
 }
 
 /**
- * Full-viewport intro. Server output is fully visible (no CSS hidden states),
- * so content reads with JS disabled. On the client, useLayoutEffect kicks off
- * the shared GSAP loader; nothing is hidden until it resolves, so the painted
- * hero never blanks out during the chunk fetch. Once ready, the lines are
- * hidden (gsap.set) and a single timeline plays eyebrow → split name chars →
- * role → headline → CTAs → scroll cue, all in the same tick. The name split
- * keeps accessibility: splitChars sets aria-label to the original text and
- * marks the char spans aria-hidden. Reduced motion: no effect runs and
- * everything is visible immediately.
+ * Full-viewport cover sheet — the hero composed as the title page of a set
+ * of technical drawings: sheet frame, project annotations, the name as the
+ * drawing title, and a dimension line measuring it. Server output is fully
+ * visible (no CSS hidden states), so content reads with JS disabled. On the
+ * client, useLayoutEffect kicks off the shared GSAP loader; nothing is
+ * hidden until it resolves, so the painted hero never blanks out during the
+ * chunk fetch. Once ready, the lines are hidden (gsap.set) and one timeline
+ * plays: frame annotations → split name chars rise → dimension line draws
+ * (scaleX) → role → headline → CTAs → scroll cue. splitChars keeps
+ * accessibility (aria-label + aria-hidden char spans). Reduced motion: no
+ * effect runs and everything is visible immediately.
  */
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const eyebrowRef = useRef<HTMLParagraphElement>(null);
   const nameRef = useRef<HTMLHeadingElement>(null);
+  const dimRef = useRef<HTMLDivElement>(null);
   const roleRef = useRef<HTMLParagraphElement>(null);
   const headlineRef = useRef<HTMLParagraphElement>(null);
   const ctasRef = useRef<HTMLDivElement>(null);
@@ -73,16 +77,26 @@ export function Hero() {
     const section = sectionRef.current;
     const eyebrow = eyebrowRef.current;
     const name = nameRef.current;
+    const dim = dimRef.current;
     const role = roleRef.current;
     const headline = headlineRef.current;
     const ctas = ctasRef.current;
     const cue = cueRef.current;
     const cueLine = cueLineRef.current;
-    if (!section || !eyebrow || !name || !role || !headline || !ctas || !cue) {
+    if (
+      !section ||
+      !eyebrow ||
+      !name ||
+      !dim ||
+      !role ||
+      !headline ||
+      !ctas ||
+      !cue
+    ) {
       return;
     }
 
-    const lines = [eyebrow, name, role, headline, ctas, cue];
+    const lines = [eyebrow, name, dim, role, headline, ctas, cue];
     const originalName = name.textContent ?? "";
     let isSplit = false;
 
@@ -120,6 +134,8 @@ export function Hero() {
         // stay keyboard-focusable during the intro.
         gsap.set(ctas, { opacity: 0, y: 18 });
         gsap.set(cue, { autoAlpha: 0 });
+        // The dimension line draws in from the left like a plotted stroke.
+        gsap.set(dim, { autoAlpha: 0, scaleX: 0, transformOrigin: "left center" });
         // Park the chars below their baseline; the heading wrapper itself
         // stays visible so only the chars rise in.
         gsap.set(chars, { yPercent: 110, autoAlpha: 0 });
@@ -128,7 +144,7 @@ export function Hero() {
 
         gsap
           .timeline({ defaults: { ease: EASE } })
-          .to(eyebrow, settle, EYEBROW_AT)
+          .to(eyebrow, settle, FRAME_AT)
           .to(
             chars,
             {
@@ -139,6 +155,7 @@ export function Hero() {
             },
             NAME_AT,
           )
+          .to(dim, { autoAlpha: 1, scaleX: 1, duration: 0.7 }, DIM_AT)
           .to(role, settle, ROLE_AT)
           .to(headline, settle, HEADLINE_AT)
           .to(ctas, { opacity: 1, y: 0, duration: LINE_DURATION }, CTAS_AT)
@@ -168,33 +185,43 @@ export function Hero() {
     <section
       ref={sectionRef}
       aria-labelledby={HEADING_ID}
-      className="relative flex min-h-svh flex-col justify-center px-6 py-24 sm:px-10 lg:pl-28 lg:pr-16"
+      className="relative flex min-h-svh flex-col justify-center px-4 py-24 sm:px-8 lg:px-16"
     >
-      <div className="mx-auto w-full max-w-6xl">
+      <div className="sheet-frame mx-auto w-full max-w-6xl px-6 py-12 sm:px-12 sm:py-16 lg:px-16">
         <p
           ref={eyebrowRef}
-          className="font-mono text-xs uppercase tracking-[0.25em] text-muted"
+          className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2 font-mono text-[0.6875rem] uppercase tracking-[0.2em] text-muted"
         >
-          {profile.location} — Open to full-time roles
+          <span>Project — personal portfolio · cover sheet</span>
+          <span>
+            {profile.location} — open to full-time roles
+          </span>
         </p>
 
         <h1
           ref={nameRef}
           id={HEADING_ID}
-          className="mt-6 font-medium uppercase leading-[0.95] tracking-tight text-bone"
+          className="mt-10 font-extrabold uppercase leading-[0.98] tracking-[0.005em] text-bone"
           style={{ fontSize: "var(--text-hero)" }}
         >
           {profile.name}
         </h1>
 
+        <div ref={dimRef} aria-hidden="true" className="mt-6 max-w-xl">
+          <span className="dim-line" />
+          <span className="mt-2 block font-mono text-[0.625rem] uppercase tracking-[0.25em] text-muted">
+            fig. 01 — the developer, measured
+          </span>
+        </div>
+
         <p
           ref={roleRef}
-          className="mt-6 text-2xl font-medium tracking-tight text-bone sm:text-3xl"
+          className="mt-8 text-2xl font-semibold uppercase tracking-tight text-bone sm:text-3xl"
         >
           {renderRole(profile.role)}
         </p>
 
-        <p ref={headlineRef} className="mt-3 max-w-xl text-muted">
+        <p ref={headlineRef} className="mt-4 max-w-xl text-muted">
           {profile.headline}
         </p>
 

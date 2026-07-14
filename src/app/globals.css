@@ -1,18 +1,26 @@
 @import "tailwindcss";
 
+/*
+ * V4 — "Blueprint" (architecture drawing, deep drafting blue).
+ * The token CONTRACT is shared with every design version: --ink is the page
+ * canvas, --bone the primary text, --surface the card fill, --line the
+ * hairline, --muted the secondary text, --current-1/2 the accent pair.
+ * Here the canvas is blueprint blue, line-work is paper white, and the
+ * accents are redline orange → drafting tan.
+ */
 :root {
-  --ink: #0b0b10;
-  --surface: #15151f;
-  --line: #26263a;
-  --bone: #f2efe9;
-  --muted: #8a8aa0;
-  --current-1: #7c5cff;
-  --current-2: #3ee6ff;
+  --ink: #0f2e64; /* blueprint blue canvas */
+  --surface: #143776; /* raised sheet panel */
+  --line: #35619f; /* cyan grid hairline */
+  --bone: #eaf2ff; /* paper line-work text */
+  --muted: #a7bce0; /* faded annotation */
+  --current-1: #ff6b45; /* redline orange */
+  --current-2: #ffd08a; /* drafting tan */
 
-  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-mono: var(--font-plexmono), ui-monospace, "SF Mono", Menlo, monospace;
 
-  --text-hero: clamp(3rem, 1rem + 9vw, 8.5rem);
-  --text-h2: clamp(2rem, 1rem + 4vw, 4.5rem);
+  --text-hero: clamp(2.9rem, 1rem + 8.4vw, 8rem);
+  --text-h2: clamp(1.9rem, 1rem + 3.8vw, 4.25rem);
   --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
 
   --space-section: clamp(5rem, 3rem + 8vw, 12rem);
@@ -31,7 +39,7 @@
   --color-current-1: var(--current-1);
   --color-current-2: var(--current-2);
   --font-sans: var(--font-grotesk), system-ui, sans-serif;
-  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-mono: var(--font-plexmono), ui-monospace, "SF Mono", Menlo, monospace;
 }
 
 html {
@@ -51,6 +59,17 @@ body {
   font-size: var(--text-base);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  /* Drafting-paper grid: fine 24px cells, a heavier rule every 120px. */
+  background-image:
+    linear-gradient(rgba(234, 242, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(234, 242, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(rgba(234, 242, 255, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(234, 242, 255, 0.028) 1px, transparent 1px);
+  background-size:
+    120px 120px,
+    120px 120px,
+    24px 24px,
+    24px 24px;
 }
 
 ::selection {
@@ -64,21 +83,64 @@ body {
   border-radius: 2px;
 }
 
-/* Film grain — fixed overlay, pure CSS noise via SVG data URI */
-.grain {
-  pointer-events: none;
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 240px 240px;
+/* Display face — Archivo carries the drawing-title voice. */
+.font-display {
+  font-family: var(--font-grotesk), system-ui, sans-serif;
 }
 
-/* Accent gradient text helper */
+/* Accent gradient text helper (redline → drafting tan). */
 .text-current-gradient {
   background: linear-gradient(100deg, var(--current-1), var(--current-2));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/*
+ * Dimension line — the V4 signature. A measured span with arrowheads and
+ * end ticks, drawn under figures like a dimension callout on a drawing.
+ * Pure CSS (borders + pseudo arrows); decorative only.
+ */
+.dim-line {
+  position: relative;
+  display: block;
+  height: 1px;
+  background: var(--line);
+}
+
+.dim-line::before,
+.dim-line::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border-block: 3px solid transparent;
+}
+
+.dim-line::before {
+  left: 0;
+  transform: translateY(-50%);
+  border-right: 6px solid var(--line);
+}
+
+.dim-line::after {
+  right: 0;
+  transform: translateY(-50%);
+  border-left: 6px solid var(--line);
+}
+
+/* Sheet frame: drawing border with an inner rule, like a plotted sheet. */
+.sheet-frame {
+  position: relative;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.sheet-frame::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid color-mix(in oklab, var(--line) 55%, transparent);
+  pointer-events: none;
 }

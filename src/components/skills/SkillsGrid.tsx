@@ -19,8 +19,8 @@ export function SkillsGrid() {
       <div className="mx-auto max-w-6xl px-6 md:px-10 lg:px-24">
         <SectionHeading
           id="skills-heading"
-          eyebrow="Toolbox"
-          title="What I work with"
+          eyebrow="BOM"
+          title="Bill of materials"
         />
 
         <div className="mt-14 border-t border-line">

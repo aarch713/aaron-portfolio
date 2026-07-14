@@ -9,7 +9,7 @@ const COUNT_DURATION = 1.4;
 const COUNT_START = "top 85%";
 /** Count-up step for non-integer targets (e.g. 99.9) so the tween lands exactly. */
 const DECIMAL_SNAP = 0.1;
-const FIGURE_SIZE = "clamp(2.5rem, 2rem + 2vw, 4rem)";
+const FIGURE_SIZE = "clamp(2rem, 1.5rem + 1.6vw, 3.1rem)";
 
 interface MetricCounterProps {
   metric: Metric;
@@ -102,7 +102,7 @@ export function MetricCounter({ metric, className }: MetricCounterProps) {
   return (
     <div ref={rootRef} className={className}>
       <p
-        className="font-mono font-medium leading-none tracking-tight"
+        className="font-semibold leading-none tracking-tight"
         style={{ fontSize: FIGURE_SIZE }}
       >
         <span className="sr-only">{accessibleFigure}</span>
@@ -112,7 +112,11 @@ export function MetricCounter({ metric, className }: MetricCounterProps) {
           {metric.suffix}
         </span>
       </p>
-      <p className="mt-3 text-sm text-muted">{metric.label}</p>
+      {/* Dimension callout: the metric read like a measured span. */}
+      <span aria-hidden="true" className="dim-line mt-4 max-w-36" />
+      <p className="mt-3 font-mono text-xs uppercase tracking-[0.08em] text-muted">
+        {metric.label}
+      </p>
     </div>
   );
 }

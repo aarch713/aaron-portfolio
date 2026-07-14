@@ -50,17 +50,9 @@ function splitResult(result: string): { lead: string; rest: string } {
   return { lead: result.slice(0, splitAt), rest: result.slice(splitAt) };
 }
 
-/** 2rem gradient rule that prefixes every mono eyebrow (SectionHeading style). */
+/** Short dimension tick that prefixes every mono eyebrow (drawing style). */
 function GradientRule() {
-  return (
-    <span
-      aria-hidden="true"
-      className="inline-block h-px w-8 shrink-0"
-      style={{
-        background: "linear-gradient(90deg, var(--current-1), var(--current-2))",
-      }}
-    />
-  );
+  return <span aria-hidden="true" className="dim-line w-10 shrink-0" />;
 }
 
 /** Case-study section: mono eyebrow as the h2, content below. */
@@ -107,7 +99,7 @@ export function CaseStudy({ project }: CaseStudyProps) {
           </Reveal>
           <Reveal delay={HEADER_TITLE_DELAY}>
             <h1
-              className="mt-6 font-medium leading-[1.05] tracking-tight text-bone"
+              className="mt-6 font-extrabold uppercase leading-[1.02] tracking-[0.005em] text-bone"
               style={{ fontSize: TITLE_SIZE }}
             >
               {project.title}
@@ -161,13 +153,21 @@ export function CaseStudy({ project }: CaseStudyProps) {
 
         <CaseSection label="Architecture">
           <Reveal>
-            <pre
-              role="img"
-              aria-label={`Architecture diagram for ${project.title}`}
-              className="overflow-x-auto rounded-lg border border-line bg-surface p-6 font-mono text-sm leading-relaxed text-muted"
-            >
-              {caseStudy.architecture}
-            </pre>
+            <div className="sheet-frame">
+              <div className="flex items-baseline justify-between border-b border-line px-6 py-3 font-mono text-[0.6875rem] uppercase tracking-[0.22em] text-muted">
+                <span>
+                  Sheet A-{String(safeIndex + 1).padStart(2, "0")} of 06
+                </span>
+                <span className="truncate pl-6">{project.slug}</span>
+              </div>
+              <pre
+                role="img"
+                aria-label={`Architecture diagram for ${project.title}`}
+                className="overflow-x-auto p-6 font-mono text-sm leading-relaxed text-muted"
+              >
+                {caseStudy.architecture}
+              </pre>
+            </div>
           </Reveal>
         </CaseSection>
 

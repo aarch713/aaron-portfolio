@@ -22,7 +22,9 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",
+    "@fontsource-variable/archivo": "^5.2.8",
     "@fontsource-variable/space-grotesk": "^5.2.10",
+    "@fontsource/ibm-plex-mono": "^5.2.7",
     "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4.3.2",
     "@types/node": "^26.1.1",

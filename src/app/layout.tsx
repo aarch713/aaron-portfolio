@@ -2,25 +2,44 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/react";
 import { ChatWidget } from "@/components/chat/ChatWidget";
-import { CurrentLine } from "@/components/current/CurrentLine";
 import { profile } from "@/content/profile";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
-const grotesk = localFont({
-  src: "../../public/fonts/space-grotesk-var.woff2",
+/* V4 "Blueprint" type pairing: Archivo carries display AND body (an
+ * engineering grotesque, wide caps for titles, quiet at text sizes);
+ * IBM Plex Mono carries annotations, dimensions, and labels. */
+const archivo = localFont({
+  src: "../../public/fonts/archivo-var.woff2",
   variable: "--font-grotesk",
   display: "swap",
-  weight: "300 700",
+  weight: "100 900",
+});
+
+const plexMono = localFont({
+  src: [
+    {
+      path: "../../public/fonts/ibm-plex-mono-400.woff2",
+      style: "normal",
+      weight: "400",
+    },
+    {
+      path: "../../public/fonts/ibm-plex-mono-500.woff2",
+      style: "normal",
+      weight: "500",
+    },
+  ],
+  variable: "--font-plexmono",
+  display: "swap",
 });
 
 const DESCRIPTION =
-  "Full-stack developer building Shopify commerce systems and production LLM tooling with React, TypeScript, Node.js, and Python.";
+  "Backend developer drafting reliable commerce systems — API gateways with circuit breakers, idempotent ledgers, and self-healing pipelines in Node.js, TypeScript, and Python.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Aaron Chai — Full-Stack Developer",
+    default: "Aaron Chai — Backend Developer",
     template: "%s — Aaron Chai",
   },
   description: DESCRIPTION,
@@ -28,7 +47,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Aaron Chai",
     url: SITE_URL,
-    title: "Aaron Chai — Full-Stack Developer",
+    title: "Aaron Chai — Backend Developer",
     description: DESCRIPTION,
   },
   twitter: { card: "summary_large_image" },
@@ -57,12 +76,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={grotesk.variable}>
+    <html lang="en" className={`${archivo.variable} ${plexMono.variable}`}>
       <body className="bg-ink text-bone">
         {children}
-        <CurrentLine />
         <ChatWidget />
-        <div className="grain" aria-hidden="true" />
         <script
           type="application/ld+json"
           // Static, locally-defined literal serialized via JSON.stringify —

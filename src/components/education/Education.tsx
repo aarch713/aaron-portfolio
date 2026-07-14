@@ -19,8 +19,8 @@ export function Education() {
       <div className="mx-auto max-w-6xl px-6 md:px-10 lg:px-24">
         <SectionHeading
           id="education-heading"
-          eyebrow="Education"
-          title="Credentials"
+          eyebrow="Spec section"
+          title="Specifications"
         />
 
         <div className="mt-14 border-t border-line">

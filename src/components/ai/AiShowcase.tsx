@@ -94,8 +94,8 @@ export function AiShowcase({ paperclip }: { paperclip: PaperclipTileData }) {
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           id="ai-heading"
-          eyebrow="AI in production"
-          title="AI-assisted engineering, shipped"
+          eyebrow="Schedule A"
+          title="Automation schedule"
         />
 
         <Reveal delay={0.05}>

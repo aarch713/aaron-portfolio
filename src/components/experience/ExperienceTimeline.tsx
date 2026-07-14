@@ -196,8 +196,8 @@ export function ExperienceTimeline() {
     >
       <div className="mx-auto w-full max-w-5xl px-6 sm:px-10 lg:px-16">
         <SectionHeading
-          eyebrow="Experience"
-          title="Where I've shipped"
+          eyebrow="Rev log"
+          title="Revision history"
           id={HEADING_ID}
         />
         <ol ref={listRef} className="relative mt-16 border-l border-line">

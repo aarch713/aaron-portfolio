@@ -9,30 +9,25 @@ interface SectionHeadingProps {
 }
 
 /**
- * Section header: mono uppercase eyebrow prefixed with a 2rem gradient rule,
- * followed by a display H2 at the locked --text-h2 scale. Self-reveals on
- * scroll via Reveal (which stays fully visible under reduced motion / no JS).
+ * Section header, drawing-title style: the eyebrow sits in a small bordered
+ * tag (like a sheet code in a title block) with a rule running off to the
+ * right, then the Archivo display H2 in drawing caps at the locked --text-h2
+ * scale. Self-reveals on scroll via Reveal (fully visible under reduced
+ * motion / no JS).
  */
 export function SectionHeading({ eyebrow, title, id }: SectionHeadingProps) {
   return (
     <div>
       <Reveal>
-        <p className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.25em] text-muted">
-          <span
-            aria-hidden="true"
-            className="inline-block h-px w-8 shrink-0"
-            style={{
-              background:
-                "linear-gradient(90deg, var(--current-1), var(--current-2))",
-            }}
-          />
-          {eyebrow}
+        <p className="flex items-center gap-4 font-mono text-[0.6875rem] uppercase tracking-[0.22em] text-muted">
+          <span className="border border-line px-2.5 py-1">{eyebrow}</span>
+          <span aria-hidden="true" className="dim-line min-w-10 flex-1 max-w-40" />
         </p>
         {/* The aria-labelledby target id lives on the h2 itself so the
             section's accessible name is the title alone, not eyebrow+title. */}
         <h2
           id={id}
-          className="mt-4 font-medium leading-[1.08] tracking-tight text-bone"
+          className="mt-5 font-bold uppercase leading-[1.05] tracking-[0.01em] text-bone"
           style={{ fontSize: "var(--text-h2)" }}
         >
           {title}

@@ -1,6 +1,9 @@
-# aaronchai.dev — personal portfolio
+# aaronchai.dev — personal portfolio · V4 "Blueprint"
 
-Dark-cinematic scrollytelling portfolio for Aaron Chai (Full-Stack Developer).
+Architecture-drawing portfolio for Aaron Chai (Backend Developer) — drafting
+blue, grid paper, Archivo caps, dimension-line metrics, title-block footer.
+One of five design versions (see `docs/design-directions.md`; `main` is V1
+"The Current").
 Next.js 16 (App Router) · TypeScript · Tailwind v4 · GSAP ScrollTrigger + Lenis ·
 Claude-powered "Ask my resume" chat · Resend-backed contact form.
 

@@ -27,7 +27,7 @@ export function ContactSection() {
       className="py-(--space-section)"
     >
       <div className="mx-auto w-full max-w-6xl px-6 md:px-10">
-        <SectionHeading eyebrow="Contact" title="Let's talk" id={HEADING_ID} />
+        <SectionHeading eyebrow="RFI-001" title="Request for information" id={HEADING_ID} />
 
         <div className="mt-14 grid items-start gap-14 lg:mt-20 lg:grid-cols-2 lg:gap-20">
           <Reveal>

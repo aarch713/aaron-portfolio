@@ -9,3 +9,6 @@ next-env.d.ts
 /test-results/
 /playwright-report/
 /coverage/
+
+# personal documents — never publish (repo is public)
+/resumes/

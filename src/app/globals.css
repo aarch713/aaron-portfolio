@@ -1,18 +1,30 @@
 @import "tailwindcss";
 
+/*
+ * V5 — "Golden Hour" (SoCal pop, vibrant light).
+ * The token CONTRACT is shared with every design version: --ink is the page
+ * canvas, --bone the primary text, --surface the card fill, --line the
+ * hairline, --muted the secondary text, --current-1/2 the accent pair.
+ * Here the canvas is warm white, text is deep indigo, and the accent pair is
+ * coral → tangerine, with golden and sky as supporting section accents.
+ */
 :root {
-  --ink: #0b0b10;
-  --surface: #15151f;
-  --line: #26263a;
-  --bone: #f2efe9;
-  --muted: #8a8aa0;
-  --current-1: #7c5cff;
-  --current-2: #3ee6ff;
+  --ink: #fff9f0; /* warm white canvas */
+  --surface: #ffffff; /* white card */
+  --line: #eadfce; /* warm hairline */
+  --bone: #221c4e; /* deep indigo text */
+  --muted: #625d86; /* dusk indigo secondary */
+  --current-1: #e42f63; /* coral (AA on warm white) */
+  --current-2: #d95a00; /* tangerine (AA on warm white) */
+  --golden: #ffc532; /* golden accent (fills only) */
+  --sky: #7ac7ff; /* sky accent (fills only) */
+  --coral-fill: #ff3d71; /* vivid coral for fills/gradients */
+  --tangerine-fill: #ff7a29; /* vivid tangerine for fills/gradients */
 
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  --text-hero: clamp(3rem, 1rem + 9vw, 8.5rem);
-  --text-h2: clamp(2rem, 1rem + 4vw, 4.5rem);
+  --text-hero: clamp(3rem, 1rem + 8.6vw, 8rem);
+  --text-h2: clamp(2rem, 1rem + 4vw, 4.25rem);
   --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
 
   --space-section: clamp(5rem, 3rem + 8vw, 12rem);
@@ -30,7 +42,10 @@
   --color-muted: var(--muted);
   --color-current-1: var(--current-1);
   --color-current-2: var(--current-2);
+  --color-golden: var(--golden);
+  --color-sky: var(--sky);
   --font-sans: var(--font-grotesk), system-ui, sans-serif;
+  --font-display: var(--font-bricolage), "Arial Rounded MT Bold", system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
@@ -51,34 +66,52 @@ body {
   font-size: var(--text-base);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  /* Golden-hour wash: low sun glow rising from the horizon line. */
+  background-image:
+    radial-gradient(58rem 30rem at 82% -6rem, rgba(255, 197, 50, 0.16), transparent 70%),
+    radial-gradient(44rem 26rem at -6% 30rem, rgba(255, 61, 113, 0.07), transparent 70%);
+  background-repeat: no-repeat;
 }
 
 ::selection {
-  background: var(--current-1);
-  color: var(--ink);
+  background: var(--coral-fill);
+  color: #fff9f0;
 }
 
 :focus-visible {
-  outline: 2px solid var(--current-2);
+  outline: 2px solid var(--current-1);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
-/* Film grain — fixed overlay, pure CSS noise via SVG data URI */
-.grain {
-  pointer-events: none;
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 240px 240px;
+/* Display face — Bricolage carries the warm, chunky voice. */
+.font-display {
+  font-family: var(--font-bricolage), "Arial Rounded MT Bold", system-ui, sans-serif;
 }
 
-/* Accent gradient text helper */
+/* Accent gradient text helper (coral → tangerine sunset). */
 .text-current-gradient {
   background: linear-gradient(100deg, var(--current-1), var(--current-2));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* Sticker chip: chunky white pill with an indigo keyline and a hard, tiny
+ * shadow — like a die-cut sticker on the page. */
+.sticker {
+  display: inline-block;
+  border: 1.5px solid var(--bone);
+  border-radius: 9999px;
+  background: var(--surface);
+  box-shadow: 2px 2px 0 0 var(--bone);
+}
+
+/* Bento tile: soft-rounded card with a hard offset shadow. Tint it with a
+ * --tile background override per instance. */
+.bento {
+  border: 1.5px solid var(--bone);
+  border-radius: 1.25rem;
+  background: var(--tile, var(--surface));
+  box-shadow: 4px 4px 0 0 var(--bone);
 }

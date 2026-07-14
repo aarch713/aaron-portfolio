@@ -2,25 +2,34 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/react";
 import { ChatWidget } from "@/components/chat/ChatWidget";
-import { CurrentLine } from "@/components/current/CurrentLine";
+import { SunArc } from "@/components/current/SunArc";
 import { profile } from "@/content/profile";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
-const grotesk = localFont({
-  src: "../../public/fonts/space-grotesk-var.woff2",
+/* V5 "Golden Hour" type pairing: Bricolage Grotesque carries the chunky,
+ * warm display voice; Inter carries body prose. Both variable, self-hosted. */
+const bricolage = localFont({
+  src: "../../public/fonts/bricolage-var.woff2",
+  variable: "--font-bricolage",
+  display: "swap",
+  weight: "200 800",
+});
+
+const inter = localFont({
+  src: "../../public/fonts/inter-var.woff2",
   variable: "--font-grotesk",
   display: "swap",
-  weight: "300 700",
+  weight: "100 900",
 });
 
 const DESCRIPTION =
-  "Full-stack developer building Shopify commerce systems and production LLM tooling with React, TypeScript, Node.js, and Python.";
+  "Frontend developer making commerce feel fast — design systems, accessible React/TypeScript UI, and Core Web Vitals wins across two live storefronts.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Aaron Chai — Full-Stack Developer",
+    default: "Aaron Chai — Frontend Developer",
     template: "%s — Aaron Chai",
   },
   description: DESCRIPTION,
@@ -28,7 +37,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Aaron Chai",
     url: SITE_URL,
-    title: "Aaron Chai — Full-Stack Developer",
+    title: "Aaron Chai — Frontend Developer",
     description: DESCRIPTION,
   },
   twitter: { card: "summary_large_image" },
@@ -57,12 +66,11 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={grotesk.variable}>
+    <html lang="en" className={`${bricolage.variable} ${inter.variable}`}>
       <body className="bg-ink text-bone">
         {children}
-        <CurrentLine />
+        <SunArc />
         <ChatWidget />
-        <div className="grain" aria-hidden="true" />
         <script
           type="application/ld+json"
           // Static, locally-defined literal serialized via JSON.stringify —

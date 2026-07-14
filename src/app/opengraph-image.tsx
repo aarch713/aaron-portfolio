@@ -1,18 +1,19 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Aaron Chai — Full-Stack Developer";
+export const alt = "Aaron Chai — Frontend Developer";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 // The OG renderer runs outside the DOM and cannot read CSS custom properties,
 // so the locked design-token values are inlined here (the one allowed
-// exception) — they mirror --ink/--bone/--muted/--current-1/--current-2
-// in globals.css exactly.
-const INK = "#0B0B10";
-const BONE = "#F2EFE9";
-const MUTED = "#8A8AA0";
-const CURRENT_1 = "#7C5CFF";
-const CURRENT_2 = "#3EE6FF";
+// exception) — they mirror the tokens in globals.css exactly.
+const WARM_WHITE = "#FFF9F0";
+const INDIGO = "#221C4E";
+const DUSK = "#625D86";
+const GOLDEN = "#FFC532";
+const CORAL = "#FF3D71";
+const TANGERINE = "#FF7A29";
+const SKY = "#7AC7FF";
 
 export default function OpengraphImage() {
   return new ImageResponse(
@@ -25,58 +26,88 @@ export default function OpengraphImage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "72px 80px",
-          backgroundColor: INK,
+          backgroundColor: WARM_WHITE,
+          backgroundImage: `radial-gradient(500px 280px at 85% -40px, ${GOLDEN}44, transparent 70%)`,
         }}
       >
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            flexGrow: 1,
+            alignItems: "center",
+            gap: 16,
+            fontSize: 26,
+            color: DUSK,
+            letterSpacing: "0.24em",
+            textTransform: "uppercase",
           }}
         >
           <div
             style={{
-              fontSize: 130,
-              fontWeight: 700,
-              color: BONE,
+              width: 26,
+              height: 26,
+              borderRadius: 999,
+              backgroundColor: GOLDEN,
+              border: `4px solid ${TANGERINE}`,
+            }}
+          />
+          Chino Hills, CA — golden hour
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <div
+            style={{
+              fontSize: 132,
+              fontWeight: 800,
+              color: INDIGO,
               letterSpacing: "-0.03em",
-              lineHeight: 1.05,
+              lineHeight: 1.0,
             }}
           >
             Aaron Chai
           </div>
           <div
             style={{
-              width: 240,
-              height: 8,
-              marginTop: 36,
-              borderRadius: 4,
-              backgroundImage: `linear-gradient(90deg, ${CURRENT_1}, ${CURRENT_2})`,
-            }}
-          />
-          <div
-            style={{
               marginTop: 30,
-              fontSize: 46,
-              fontWeight: 400,
-              color: BONE,
-              letterSpacing: "-0.01em",
+              display: "flex",
+              alignItems: "center",
+              gap: 18,
+              fontSize: 48,
+              fontWeight: 700,
+              color: INDIGO,
             }}
           >
-            Full-Stack Developer
+            <span
+              style={{
+                backgroundColor: GOLDEN,
+                padding: "2px 18px",
+                borderRadius: 14,
+                transform: "rotate(-1deg)",
+              }}
+            >
+              Frontend
+            </span>
+            Developer
           </div>
         </div>
+
         <div
           style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
             fontSize: 28,
-            color: MUTED,
+            color: DUSK,
             letterSpacing: "0.22em",
             textTransform: "uppercase",
           }}
         >
-          aaronchai.dev
+          <span>aaronchai.dev</span>
+          <div style={{ display: "flex", gap: 10 }}>
+            <div style={{ width: 18, height: 18, borderRadius: 999, backgroundColor: GOLDEN }} />
+            <div style={{ width: 18, height: 18, borderRadius: 999, backgroundColor: SKY }} />
+            <div style={{ width: 18, height: 18, borderRadius: 999, backgroundColor: CORAL }} />
+            <div style={{ width: 18, height: 18, borderRadius: 999, backgroundColor: TANGERINE }} />
+          </div>
         </div>
       </div>
     ),

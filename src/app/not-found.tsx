@@ -14,7 +14,7 @@ export default function NotFound() {
         404
       </p>
       <h1
-        className="mt-6 font-medium leading-[1.05] tracking-tight text-bone"
+        className="font-display mt-6 font-extrabold leading-[1.05] tracking-tight text-bone"
         style={{ fontSize: "var(--text-h2)" }}
       >
         Lost pixel.

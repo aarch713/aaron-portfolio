@@ -4,22 +4,26 @@ import { Fragment, useLayoutEffect, useRef } from "react";
 import { profile } from "@/content/profile";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { EASE, loadGsap, splitChars } from "@/lib/motion";
+import { loadGsap, splitChars } from "@/lib/motion";
 
 const HEADING_ID = "hero-heading";
-/** The one word of the role line that carries the current gradient. */
-const GRADIENT_WORD = "Full-Stack";
+/** The one word of the role line that gets the golden marker highlight. */
+const MARKER_WORD = "Frontend";
+
+/* Springy ease for the pop-in choreography (V5 only — the shared EASE
+ * constant stays expo for scroll reveals). */
+const POP_EASE = "back.out(1.5)";
 
 /* Load choreography (seconds). Everything lands inside 1.6s total. */
-const CHAR_STAGGER = 0.02;
+const CHAR_STAGGER = 0.022;
 const EYEBROW_AT = 0;
 const NAME_AT = 0.1;
-const ROLE_AT = 0.55;
-const HEADLINE_AT = 0.7;
-const CTAS_AT = 0.85;
-const CUE_AT = 1.05;
+const ROLE_AT = 0.6;
+const HEADLINE_AT = 0.75;
+const CTAS_AT = 0.9;
+const CUE_AT = 1.1;
 const LINE_DURATION = 0.55;
-const CHAR_DURATION = 0.7;
+const CHAR_DURATION = 0.6;
 const CUE_FADE_DURATION = 0.5;
 
 /* Scroll-cue breathing loop (starts after the intro settles). */
@@ -31,13 +35,18 @@ interface GsapContextLike {
   revert(): void;
 }
 
-/** Renders the role line, wrapping the gradient word in the token helper. */
+/** Renders the role line, wrapping the marker word in a golden highlight. */
 function renderRole(role: string) {
   return role.split(" ").map((word, index) => (
     <Fragment key={`${word}-${index}`}>
       {index > 0 ? " " : null}
-      {word === GRADIENT_WORD ? (
-        <span className="text-current-gradient">{word}</span>
+      {word === MARKER_WORD ? (
+        <span
+          className="inline-block -rotate-1 rounded-lg px-2"
+          style={{ background: "var(--golden)" }}
+        >
+          {word}
+        </span>
       ) : (
         word
       )}
@@ -46,14 +55,14 @@ function renderRole(role: string) {
 }
 
 /**
- * Full-viewport intro. Server output is fully visible (no CSS hidden states),
- * so content reads with JS disabled. On the client, useLayoutEffect kicks off
- * the shared GSAP loader; nothing is hidden until it resolves, so the painted
- * hero never blanks out during the chunk fetch. Once ready, the lines are
- * hidden (gsap.set) and a single timeline plays eyebrow → split name chars →
- * role → headline → CTAs → scroll cue, all in the same tick. The name split
- * keeps accessibility: splitChars sets aria-label to the original text and
- * marks the char spans aria-hidden. Reduced motion: no effect runs and
+ * Full-viewport golden-hour intro. Server output is fully visible (no CSS
+ * hidden states), so content reads with JS disabled. On the client,
+ * useLayoutEffect kicks off the shared GSAP loader; nothing is hidden until
+ * it resolves, so the painted hero never blanks out during the chunk fetch.
+ * Once ready, the lines are hidden (gsap.set) and a single timeline plays
+ * eyebrow → name chars springing up (back.out) → role → headline → CTAs →
+ * scroll cue, all in the same tick. splitChars keeps accessibility
+ * (aria-label + aria-hidden char spans). Reduced motion: no effect runs and
  * everything is visible immediately.
  */
 export function Hero() {
@@ -121,13 +130,13 @@ export function Hero() {
         gsap.set(ctas, { opacity: 0, y: 18 });
         gsap.set(cue, { autoAlpha: 0 });
         // Park the chars below their baseline; the heading wrapper itself
-        // stays visible so only the chars rise in.
+        // stays visible so only the chars spring in.
         gsap.set(chars, { yPercent: 110, autoAlpha: 0 });
 
         const settle = { autoAlpha: 1, y: 0, duration: LINE_DURATION };
 
         gsap
-          .timeline({ defaults: { ease: EASE } })
+          .timeline({ defaults: { ease: POP_EASE } })
           .to(eyebrow, settle, EYEBROW_AT)
           .to(
             chars,
@@ -168,20 +177,28 @@ export function Hero() {
     <section
       ref={sectionRef}
       aria-labelledby={HEADING_ID}
-      className="relative flex min-h-svh flex-col justify-center px-6 py-24 sm:px-10 lg:pl-28 lg:pr-16"
+      className="relative flex min-h-svh flex-col justify-center px-6 py-24 sm:px-10 lg:px-24"
     >
       <div className="mx-auto w-full max-w-6xl">
         <p
           ref={eyebrowRef}
-          className="font-mono text-xs uppercase tracking-[0.25em] text-muted"
+          className="flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.25em] text-muted"
         >
+          <span
+            aria-hidden="true"
+            className="inline-block h-2.5 w-2.5 rounded-full"
+            style={{
+              background: "var(--golden)",
+              boxShadow: "0 0 0 3px rgba(255, 197, 50, 0.35)",
+            }}
+          />
           {profile.location} — Open to full-time roles
         </p>
 
         <h1
           ref={nameRef}
           id={HEADING_ID}
-          className="mt-6 font-medium uppercase leading-[0.95] tracking-tight text-bone"
+          className="font-display mt-7 font-extrabold leading-[0.98] tracking-tight text-bone"
           style={{ fontSize: "var(--text-hero)" }}
         >
           {profile.name}
@@ -189,13 +206,13 @@ export function Hero() {
 
         <p
           ref={roleRef}
-          className="mt-6 text-2xl font-medium tracking-tight text-bone sm:text-3xl"
+          className="font-display mt-7 text-2xl font-bold tracking-tight text-bone sm:text-3xl"
         >
           {renderRole(profile.role)}
         </p>
 
-        <p ref={headlineRef} className="mt-3 max-w-xl text-muted">
-          {profile.headline}
+        <p ref={headlineRef} className="mt-4 max-w-xl text-muted">
+          {profile.headline} — and feel a little joyful while it converts.
         </p>
 
         <div ref={ctasRef} className="mt-10 flex flex-wrap items-center gap-4">

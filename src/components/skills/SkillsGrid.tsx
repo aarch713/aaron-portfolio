@@ -20,7 +20,7 @@ export function SkillsGrid() {
         <SectionHeading
           id="skills-heading"
           eyebrow="Toolbox"
-          title="What I work with"
+          title="The toolkit"
         />
 
         <div className="mt-14 border-t border-line">
@@ -31,10 +31,10 @@ export function SkillsGrid() {
                   {group.label}
                 </h3>
                 <ul className="flex flex-wrap gap-2">
-                  {group.items.map((item) => (
+                  {group.items.map((item, itemIndex) => (
                     <li
                       key={item}
-                      className="rounded-full border border-line px-3 py-1 font-mono text-sm text-bone transition-colors duration-(--dur) hover:border-(--current-2)"
+                      className={`sticker px-3 py-1 font-mono text-sm text-bone transition-transform duration-(--dur) motion-safe:hover:-translate-y-0.5 ${itemIndex % 3 === 1 ? "rotate-1" : itemIndex % 3 === 2 ? "-rotate-1" : ""}`}
                     >
                       {item}
                     </li>

@@ -23,20 +23,15 @@ function splitSummary(summary: string): {
   return { lead, rest: remaining.length > 0 ? remaining.join(" ") : null };
 }
 
-/**
- * Divider classes for a 4-cell metric grid: single column below `sm`
- * (hairline between rows), 2×2 from `sm` up (inner hairlines only).
- */
-const METRIC_CELL_DIVIDERS = [
-  "border-b sm:border-r",
-  "border-b",
-  "border-b sm:border-b-0 sm:border-r",
-  "",
-];
+/** Pastel tile tints, one per metric — golden, sky, coral, tangerine. */
+const TILE_TINTS = ["#ffeeba", "#dbeeff", "#ffdde6", "#ffe4cd"];
+/** Playful bento offsets: alternate tiles nudge a little (motion-safe only
+ * matters for animation; static rotation is fine for reduced motion). */
+const TILE_TILTS = ["-rotate-1", "rotate-1", "rotate-1", "-rotate-1"];
 
 /**
- * About section: narrative summary (7/12) beside a 2×2 grid of counting
- * metrics (5/12), stacked on mobile. All data comes from `profile`.
+ * About section: narrative summary (7/12) beside a 2×2 bento of counting
+ * metric tiles (5/12), stacked on mobile. All data comes from `profile`.
  */
 export function About() {
   const { lead, rest } = splitSummary(profile.summary);
@@ -48,7 +43,11 @@ export function About() {
       className="py-(--space-section)"
     >
       <div className="mx-auto w-full max-w-6xl px-6 sm:px-10 lg:px-20">
-        <SectionHeading eyebrow="About" title="Systems that sell" id={HEADING_ID} />
+        <SectionHeading
+          eyebrow="Hey"
+          title="Making the web feel good"
+          id={HEADING_ID}
+        />
 
         <div className="mt-14 grid gap-14 lg:mt-20 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
@@ -63,18 +62,19 @@ export function About() {
           </div>
 
           <div className="lg:col-span-5">
-            <div className="grid grid-cols-1 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               {profile.metrics.map((metric, index) => (
-                <div
-                  key={metric.label}
-                  className={`border-line p-6 sm:p-8 ${
-                    METRIC_CELL_DIVIDERS[index % METRIC_CELL_DIVIDERS.length]
-                  }`}
-                >
-                  <Reveal delay={index * METRIC_STAGGER}>
+                <Reveal key={metric.label} delay={index * METRIC_STAGGER}>
+                  <div
+                    className={`bento p-6 ${TILE_TILTS[index % TILE_TILTS.length]}`}
+                    style={{
+                      ["--tile" as string]:
+                        TILE_TINTS[index % TILE_TINTS.length],
+                    }}
+                  >
                     <MetricCounter metric={metric} />
-                  </Reveal>
-                </div>
+                  </div>
+                </Reveal>
               ))}
             </div>
           </div>

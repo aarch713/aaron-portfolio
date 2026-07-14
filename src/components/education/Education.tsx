@@ -20,7 +20,7 @@ export function Education() {
         <SectionHeading
           id="education-heading"
           eyebrow="Education"
-          title="Credentials"
+          title="School & certs"
         />
 
         <div className="mt-14 border-t border-line">

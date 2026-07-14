@@ -102,11 +102,11 @@ export function MetricCounter({ metric, className }: MetricCounterProps) {
   return (
     <div ref={rootRef} className={className}>
       <p
-        className="font-mono font-medium leading-none tracking-tight"
+        className="font-display font-extrabold leading-none tracking-tight"
         style={{ fontSize: FIGURE_SIZE }}
       >
         <span className="sr-only">{accessibleFigure}</span>
-        <span aria-hidden="true" className="text-current-gradient whitespace-nowrap">
+        <span aria-hidden="true" className="whitespace-nowrap">
           {metric.prefix}
           <span ref={valueRef}>{finalText}</span>
           {metric.suffix}

@@ -107,7 +107,7 @@ export function CaseStudy({ project }: CaseStudyProps) {
           </Reveal>
           <Reveal delay={HEADER_TITLE_DELAY}>
             <h1
-              className="mt-6 font-medium leading-[1.05] tracking-tight text-bone"
+              className="font-display mt-6 font-extrabold leading-[1.03] tracking-tight text-bone"
               style={{ fontSize: TITLE_SIZE }}
             >
               {project.title}

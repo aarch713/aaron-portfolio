@@ -1,6 +1,9 @@
-# aaronchai.dev — personal portfolio
+# aaronchai.dev — personal portfolio · V5 "Golden Hour"
 
-Dark-cinematic scrollytelling portfolio for Aaron Chai (Full-Stack Developer).
+SoCal-pop portfolio for Aaron Chai (Frontend Developer) — warm white + sunset
+accents, Bricolage Grotesque display, bento metric tiles, sticker chips, and a
+sun that rides an arc across the page as you scroll. One of five design
+versions (see `docs/design-directions.md`; `main` is V1 "The Current").
 Next.js 16 (App Router) · TypeScript · Tailwind v4 · GSAP ScrollTrigger + Lenis ·
 Claude-powered "Ask my resume" chat · Resend-backed contact form.
 

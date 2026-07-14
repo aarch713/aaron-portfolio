@@ -1,6 +1,9 @@
-# aaronchai.dev — personal portfolio
+# aaronchai.dev — personal portfolio · V3 "Console"
 
-Dark-cinematic scrollytelling portfolio for Aaron Chai (Full-Stack Developer).
+Systems-terminal portfolio for Aaron Chai (Software Engineer) — green-black
+phosphor/amber console, JetBrains Mono display, live status bar, typewriter
+hero. One of five design versions (see `docs/design-directions.md`; `main` is
+V1 "The Current").
 Next.js 16 (App Router) · TypeScript · Tailwind v4 · GSAP ScrollTrigger + Lenis ·
 Claude-powered "Ask my resume" chat · Resend-backed contact form.
 

@@ -35,7 +35,7 @@ const CONTACT_LINKS = [
  */
 export function Footer() {
   return (
-    <footer className="border-t border-line">
+    <footer className="mb-8 border-t border-line">
       <div className="mx-auto w-full max-w-6xl px-6 py-16 sm:px-10 lg:px-20">
         <ul className="grid gap-10 sm:grid-cols-3">
           {CONTACT_LINKS.map((link) => (

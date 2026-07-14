@@ -1,13 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
-  <!-- V1 "The Current" mark: ink tile, gradient current line, pulse at the tip -->
-  <defs>
-    <linearGradient id="c" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#7c5cff"/>
-      <stop offset="1" stop-color="#3ee6ff"/>
-    </linearGradient>
-  </defs>
-  <rect width="64" height="64" rx="14" fill="#0b0b10"/>
-  <line x1="24" y1="12" x2="24" y2="46" stroke="url(#c)" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="24" cy="50" r="4.5" fill="#3ee6ff"/>
-  <path d="M34 46 L41 18 L48 46" fill="none" stroke="#f2efe9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- V3 "Console" mark: green-black tile, phosphor prompt, amber caret -->
+  <rect width="64" height="64" rx="14" fill="#0a0f0c"/>
+  <rect x="0.5" y="0.5" width="63" height="63" rx="13.5" fill="none" stroke="#1f2d23"/>
+  <path d="M14 22 L26 32 L14 42" fill="none" stroke="#4af2a1" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="33" y="37" width="16" height="6" rx="2" fill="#ffb454"/>
 </svg>

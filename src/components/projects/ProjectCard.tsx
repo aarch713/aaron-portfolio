@@ -25,10 +25,11 @@ function formatMetric(metric: ProjectCardData["metric"]): string {
 }
 
 /**
- * One project card. The whole card is the link to the case-study page;
- * hover/focus affordance is a border shift toward --current-1 plus a subtle
- * lift (transform only, gated behind motion-safe). Keyboard focus gets the
- * global :focus-visible outline.
+ * One project as a console panel: a title bar with traffic-light dots and the
+ * slug as a process name, then the service's headline numbers. The whole
+ * panel links to the case-study page; hover/focus affordance is a border
+ * shift toward phosphor plus a subtle lift (transform only, gated behind
+ * motion-safe). Keyboard focus gets the global :focus-visible outline.
  */
 export function ProjectCard({ item, index }: ProjectCardProps) {
   const ordinal = String(index + 1).padStart(2, "0");
@@ -37,40 +38,49 @@ export function ProjectCard({ item, index }: ProjectCardProps) {
   return (
     <Link
       href={`/projects/${item.slug}`}
-      className="group flex h-full w-[min(85vw,32rem)] flex-col rounded-lg border border-line bg-surface p-8 transition-[border-color,transform] duration-300 ease-[var(--ease-out-expo)] hover:border-current-1/50 motion-safe:hover:-translate-y-1 motion-safe:focus-visible:-translate-y-1"
+      className="console-panel group flex h-full w-[min(85vw,32rem)] flex-col transition-[border-color,transform] duration-300 ease-[var(--ease-out-expo)] hover:border-current-1/60 motion-safe:hover:-translate-y-1 motion-safe:focus-visible:-translate-y-1"
     >
-      <p className="font-mono text-xs tracking-[0.25em] text-muted">
-        {ordinal}
-      </p>
-
-      <h3 className="mt-6 text-3xl font-medium leading-tight tracking-tight text-bone">
-        {item.title}
-      </h3>
-      <p className="mt-3 text-muted">{item.tagline}</p>
-
-      <ul aria-label="Stack" className="mt-6 flex flex-wrap gap-2">
-        {item.stack.map((stackItem) => (
-          <li
-            key={stackItem}
-            className="rounded-full border border-line px-2 py-0.5 font-mono text-xs text-muted"
-          >
-            {stackItem}
-          </li>
-        ))}
-      </ul>
-
-      <p className="mt-8">
-        <span className="text-current-gradient text-4xl font-medium tracking-tight sm:text-5xl">
-          {formatMetric(headlineMetric)}
+      <div className="console-titlebar">
+        <span className="console-dots" aria-hidden="true">
+          <span />
+          <span />
+          <span />
         </span>
-        <span className="mt-2 block font-mono text-xs uppercase tracking-[0.2em] text-muted">
-          {headlineMetric.label}
-        </span>
-      </p>
+        <span className="ml-1 truncate">{item.slug}.service</span>
+        <span className="ml-auto">{ordinal}</span>
+      </div>
 
-      <p className="mt-auto pt-8 font-mono text-xs uppercase tracking-[0.2em] text-muted transition-colors duration-300 group-hover:text-bone">
-        Case study <span aria-hidden="true">&rarr;</span>
-      </p>
+      <div className="flex grow flex-col p-7">
+        <h3 className="font-mono text-2xl font-bold leading-tight tracking-tight text-bone sm:text-3xl">
+          {item.title}
+        </h3>
+        <p className="mt-3 text-muted">{item.tagline}</p>
+
+        <ul aria-label="Stack" className="mt-6 flex flex-wrap gap-2">
+          {item.stack.map((stackItem) => (
+            <li
+              key={stackItem}
+              className="rounded border border-line bg-ink/60 px-2 py-0.5 font-mono text-xs text-muted"
+            >
+              {stackItem}
+            </li>
+          ))}
+        </ul>
+
+        <p className="mt-8">
+          <span className="text-current-gradient font-mono text-4xl font-bold tracking-tight sm:text-5xl">
+            {formatMetric(headlineMetric)}
+          </span>
+          <span className="mt-2 block font-mono text-xs lowercase tracking-[0.2em] text-muted">
+            {headlineMetric.label}
+          </span>
+        </p>
+
+        <p className="mt-auto pt-8 font-mono text-xs lowercase tracking-[0.2em] text-muted transition-colors duration-300 group-hover:text-current-1">
+          <span aria-hidden="true">$</span> open case-study{" "}
+          <span aria-hidden="true">&rarr;</span>
+        </p>
+      </div>
     </Link>
   );
 }

@@ -238,7 +238,7 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
       role="dialog"
       aria-labelledby="chat-panel-title"
       onKeyDown={handlePanelKeyDown}
-      className={`fixed right-4 bottom-4 z-50 flex h-[min(70vh,32rem)] w-[min(92vw,26rem)] flex-col overflow-hidden rounded-xl border border-line bg-surface shadow-2xl ${motionClasses} ${stateClasses}`}
+      className={`fixed right-4 bottom-12 z-50 flex h-[min(70vh,32rem)] w-[min(92vw,26rem)] flex-col overflow-hidden rounded-xl border border-line bg-surface shadow-2xl ${motionClasses} ${stateClasses}`}
     >
       <header className="flex items-center justify-between border-b border-line pl-4">
         <h2

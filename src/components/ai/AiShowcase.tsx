@@ -94,8 +94,8 @@ export function AiShowcase({ paperclip }: { paperclip: PaperclipTileData }) {
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           id="ai-heading"
-          eyebrow="AI in production"
-          title="AI-assisted engineering, shipped"
+          eyebrow="ps aux | grep agents"
+          title="agents on call"
         />
 
         <Reveal delay={0.05}>
@@ -111,7 +111,7 @@ export function AiShowcase({ paperclip }: { paperclip: PaperclipTileData }) {
             >
               <article className="flex h-full flex-col border border-line bg-surface p-6 transition-colors duration-(--dur) hover:border-current-1 focus-within:border-current-1 lg:p-8">
                 <p aria-hidden="true" className="font-mono text-xs text-muted">
-                  {String(index + 1).padStart(2, "0")}
+                  agent-{String(index + 1).padStart(2, "0")}
                 </p>
                 <h3 className="mt-4 text-lg font-medium tracking-tight text-bone md:text-xl">
                   {tile.title}

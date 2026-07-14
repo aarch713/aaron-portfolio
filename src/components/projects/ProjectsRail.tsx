@@ -119,8 +119,8 @@ export function ProjectsRail({ items }: { items: ProjectCardData[] }) {
       <div className="mx-auto w-full max-w-6xl px-6">
         <SectionHeading
           id="projects-heading"
-          eyebrow="Selected work"
-          title="Built and measured"
+          eyebrow="ls services/"
+          title="services + pipelines"
         />
       </div>
 

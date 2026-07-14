@@ -48,7 +48,7 @@ export function About() {
       className="py-(--space-section)"
     >
       <div className="mx-auto w-full max-w-6xl px-6 sm:px-10 lg:px-20">
-        <SectionHeading eyebrow="About" title="Systems that sell" id={HEADING_ID} />
+        <SectionHeading eyebrow="cat about.md" title="systems in production" id={HEADING_ID} />
 
         <div className="mt-14 grid gap-14 lg:mt-20 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">

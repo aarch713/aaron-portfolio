@@ -2,25 +2,34 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/react";
 import { ChatWidget } from "@/components/chat/ChatWidget";
-import { CurrentLine } from "@/components/current/CurrentLine";
+import { StatusBar } from "@/components/current/StatusBar";
 import { profile } from "@/content/profile";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
-const grotesk = localFont({
-  src: "../../public/fonts/space-grotesk-var.woff2",
+/* V3 "Console" type pairing: JetBrains Mono carries display, labels, and
+ * data; IBM Plex Sans carries body prose. Both variable, self-hosted. */
+const jbMono = localFont({
+  src: "../../public/fonts/jetbrains-mono-var.woff2",
+  variable: "--font-jbmono",
+  display: "swap",
+  weight: "100 800",
+});
+
+const plexSans = localFont({
+  src: "../../public/fonts/ibm-plex-sans-var.woff2",
   variable: "--font-grotesk",
   display: "swap",
-  weight: "300 700",
+  weight: "100 700",
 });
 
 const DESCRIPTION =
-  "Full-stack developer building Shopify commerce systems and production LLM tooling with React, TypeScript, Node.js, and Python.";
+  "Software engineer building distributed commerce systems — serverless API gateways, idempotent transaction ledgers, and production LLM tooling in TypeScript, Node.js, and Python.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Aaron Chai — Full-Stack Developer",
+    default: "Aaron Chai — Software Engineer",
     template: "%s — Aaron Chai",
   },
   description: DESCRIPTION,
@@ -28,7 +37,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Aaron Chai",
     url: SITE_URL,
-    title: "Aaron Chai — Full-Stack Developer",
+    title: "Aaron Chai — Software Engineer",
     description: DESCRIPTION,
   },
   twitter: { card: "summary_large_image" },
@@ -57,12 +66,11 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={grotesk.variable}>
+    <html lang="en" className={`${jbMono.variable} ${plexSans.variable}`}>
       <body className="bg-ink text-bone">
         {children}
-        <CurrentLine />
+        <StatusBar />
         <ChatWidget />
-        <div className="grain" aria-hidden="true" />
         <script
           type="application/ld+json"
           // Static, locally-defined literal serialized via JSON.stringify —

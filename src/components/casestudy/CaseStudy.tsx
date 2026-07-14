@@ -13,7 +13,7 @@ const HEADER_TITLE_DELAY = 0.08;
 const HEADER_TAGLINE_DELAY = 0.16;
 
 const EYEBROW_CLASSES =
-  "flex items-center gap-3 font-mono text-xs uppercase tracking-[0.25em] text-muted";
+  "prompt font-mono text-xs lowercase tracking-[0.2em] text-muted";
 
 const MONO_LINK_CLASSES =
   "font-mono text-xs uppercase tracking-[0.2em] text-muted transition-colors duration-(--dur) hover:text-bone focus-visible:text-bone";
@@ -50,19 +50,6 @@ function splitResult(result: string): { lead: string; rest: string } {
   return { lead: result.slice(0, splitAt), rest: result.slice(splitAt) };
 }
 
-/** 2rem gradient rule that prefixes every mono eyebrow (SectionHeading style). */
-function GradientRule() {
-  return (
-    <span
-      aria-hidden="true"
-      className="inline-block h-px w-8 shrink-0"
-      style={{
-        background: "linear-gradient(90deg, var(--current-1), var(--current-2))",
-      }}
-    />
-  );
-}
-
 /** Case-study section: mono eyebrow as the h2, content below. */
 function CaseSection({ label, children }: { label: string; children: ReactNode }) {
   const headingId = `case-${label.toLowerCase()}-heading`;
@@ -70,8 +57,7 @@ function CaseSection({ label, children }: { label: string; children: ReactNode }
     <section aria-labelledby={headingId} className="mt-24 sm:mt-32">
       <Reveal>
         <h2 id={headingId} className={EYEBROW_CLASSES}>
-          <GradientRule />
-          {label}
+                    {label}
         </h2>
       </Reveal>
       <div className="mt-8">{children}</div>
@@ -101,13 +87,12 @@ export function CaseStudy({ project }: CaseStudyProps) {
         <header className="mt-14 sm:mt-20">
           <Reveal>
             <p className={EYEBROW_CLASSES}>
-              <GradientRule />
-              {project.stack.join(" · ")}
+                            {project.stack.join(" · ")}
             </p>
           </Reveal>
           <Reveal delay={HEADER_TITLE_DELAY}>
             <h1
-              className="mt-6 font-medium leading-[1.05] tracking-tight text-bone"
+              className="font-mono mt-6 font-bold leading-[1.05] tracking-tight text-bone"
               style={{ fontSize: TITLE_SIZE }}
             >
               {project.title}
@@ -161,13 +146,23 @@ export function CaseStudy({ project }: CaseStudyProps) {
 
         <CaseSection label="Architecture">
           <Reveal>
-            <pre
-              role="img"
-              aria-label={`Architecture diagram for ${project.title}`}
-              className="overflow-x-auto rounded-lg border border-line bg-surface p-6 font-mono text-sm leading-relaxed text-muted"
-            >
-              {caseStudy.architecture}
-            </pre>
+            <div className="console-panel overflow-hidden">
+              <div className="console-titlebar">
+                <span className="console-dots" aria-hidden="true">
+                  <span />
+                  <span />
+                  <span />
+                </span>
+                <span className="ml-1">architecture.txt — {project.slug}</span>
+              </div>
+              <pre
+                role="img"
+                aria-label={`Architecture diagram for ${project.title}`}
+                className="overflow-x-auto p-6 font-mono text-sm leading-relaxed text-muted"
+              >
+                {caseStudy.architecture}
+              </pre>
+            </div>
           </Reveal>
         </CaseSection>
 

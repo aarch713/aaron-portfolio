@@ -1,18 +1,20 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Aaron Chai — Full-Stack Developer";
+export const alt = "Aaron Chai — Software Engineer";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 // The OG renderer runs outside the DOM and cannot read CSS custom properties,
 // so the locked design-token values are inlined here (the one allowed
-// exception) — they mirror --ink/--bone/--muted/--current-1/--current-2
+// exception) — they mirror --ink/--surface/--line/--bone/--muted/--current-1/2
 // in globals.css exactly.
-const INK = "#0B0B10";
-const BONE = "#F2EFE9";
-const MUTED = "#8A8AA0";
-const CURRENT_1 = "#7C5CFF";
-const CURRENT_2 = "#3EE6FF";
+const INK = "#0A0F0C";
+const PANEL = "#101812";
+const LINE = "#1F2D23";
+const FOG = "#C9D6CD";
+const DIM = "#6D7F72";
+const PHOSPHOR = "#4AF2A1";
+const AMBER = "#FFB454";
 
 export default function OpengraphImage() {
   return new ImageResponse(
@@ -22,61 +24,84 @@ export default function OpengraphImage() {
           width: "100%",
           height: "100%",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          padding: "72px 80px",
+          alignItems: "center",
+          justifyContent: "center",
           backgroundColor: INK,
+          padding: "60px",
         }}
       >
         <div
           style={{
+            width: "100%",
+            height: "100%",
             display: "flex",
             flexDirection: "column",
-            justifyContent: "center",
-            flexGrow: 1,
+            backgroundColor: PANEL,
+            border: `2px solid ${LINE}`,
+            borderRadius: 18,
+            overflow: "hidden",
           }}
         >
           <div
             style={{
-              fontSize: 130,
-              fontWeight: 700,
-              color: BONE,
-              letterSpacing: "-0.03em",
-              lineHeight: 1.05,
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              padding: "22px 32px",
+              borderBottom: `2px solid ${LINE}`,
+              color: DIM,
+              fontSize: 26,
             }}
           >
-            Aaron Chai
+            <div style={{ width: 16, height: 16, borderRadius: 999, backgroundColor: AMBER }} />
+            <div style={{ width: 16, height: 16, borderRadius: 999, backgroundColor: PHOSPHOR }} />
+            <div style={{ width: 16, height: 16, borderRadius: 999, backgroundColor: LINE }} />
+            <div style={{ marginLeft: 14 }}>aaron@chai:~/portfolio</div>
           </div>
           <div
             style={{
-              width: 240,
-              height: 8,
-              marginTop: 36,
-              borderRadius: 4,
-              backgroundImage: `linear-gradient(90deg, ${CURRENT_1}, ${CURRENT_2})`,
-            }}
-          />
-          <div
-            style={{
-              marginTop: 30,
-              fontSize: 46,
-              fontWeight: 400,
-              color: BONE,
-              letterSpacing: "-0.01em",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              flexGrow: 1,
+              padding: "0 64px",
             }}
           >
-            Full-Stack Developer
+            <div style={{ display: "flex", fontSize: 30, color: DIM }}>
+              <span style={{ color: PHOSPHOR }}>$&nbsp;</span> whoami
+            </div>
+            <div
+              style={{
+                marginTop: 18,
+                fontSize: 110,
+                fontWeight: 700,
+                color: FOG,
+                letterSpacing: "-0.02em",
+                lineHeight: 1.05,
+                display: "flex",
+              }}
+            >
+              AARON CHAI
+              <span style={{ color: PHOSPHOR }}>▊</span>
+            </div>
+            <div style={{ marginTop: 20, display: "flex", fontSize: 42, color: FOG }}>
+              <span style={{ color: PHOSPHOR }}>&gt;&nbsp;</span> Software Engineer
+            </div>
           </div>
-        </div>
-        <div
-          style={{
-            fontSize: 28,
-            color: MUTED,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-          }}
-        >
-          aaronchai.dev
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              padding: "20px 32px",
+              borderTop: `2px solid ${LINE}`,
+              color: DIM,
+              fontSize: 24,
+              letterSpacing: "0.1em",
+            }}
+          >
+            <span>aaronchai.dev</span>
+            <span style={{ color: AMBER }}>scroll 000%</span>
+          </div>
         </div>
       </div>
     ),

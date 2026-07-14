@@ -63,7 +63,7 @@ export function ChatWidget() {
       ref={triggerRef}
       type="button"
       onClick={open}
-      className="fixed right-4 bottom-4 z-50 min-h-11 cursor-pointer rounded-full border border-line bg-surface px-5 font-mono text-sm text-bone transition-colors duration-(--dur) hover:border-current-1 focus-visible:border-current-1"
+      className="fixed right-4 bottom-12 z-50 min-h-11 cursor-pointer rounded-full border border-line bg-surface px-5 font-mono text-sm text-bone transition-colors duration-(--dur) hover:border-current-1 focus-visible:border-current-1"
     >
       Ask my resume
     </button>

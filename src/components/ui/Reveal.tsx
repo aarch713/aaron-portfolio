@@ -26,9 +26,9 @@ interface GsapContextLike {
  * Server-rendered output is fully visible (no CSS opacity-0), so content is
  * readable with JS disabled. On the client, nothing is hidden until the
  * shared GSAP chunk has actually loaded — the painted page never blanks out
- * during the fetch. Once loaded, the element is hidden and its ScrollTrigger
- * tween is created in the same tick; it animates in once at `top 85%`
- * (elements already in view get their entrance immediately).
+ * during the fetch. Once loaded, opacity and transform animate in at
+ * `top 85%`. Visibility is deliberately left intact so section headings and
+ * links remain in the accessibility tree while waiting to enter the viewport.
  */
 export function Reveal({
   children,
@@ -61,9 +61,9 @@ export function Reveal({
       if (cancelled) return;
 
       ctx = gsap.context(() => {
-        gsap.set(el, { autoAlpha: 0, y });
+        gsap.set(el, { opacity: 0, y });
         gsap.to(el, {
-          autoAlpha: 1,
+          opacity: 1,
           y: 0,
           duration: REVEAL_DURATION,
           ease: EASE,

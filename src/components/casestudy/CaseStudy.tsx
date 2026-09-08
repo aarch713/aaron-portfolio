@@ -16,11 +16,11 @@ const EYEBROW_CLASSES =
   "flex items-center gap-3 font-mono text-xs uppercase tracking-[0.25em] text-muted";
 
 const MONO_LINK_CLASSES =
-  "font-mono text-xs uppercase tracking-[0.2em] text-muted transition-colors duration-(--dur) hover:text-bone focus-visible:text-bone";
+  "font-mono text-xs uppercase tracking-[0.2em] text-muted transition-colors duration-(--dur) hover:text-signal focus-visible:text-signal";
 
 /** Same mono label, but recolored by the parent `group` link's hover/focus. */
 const MONO_GROUP_LABEL_CLASSES =
-  "font-mono text-xs uppercase tracking-[0.2em] text-muted transition-colors duration-(--dur) group-hover:text-bone group-focus-visible:text-bone";
+  "font-mono text-xs uppercase tracking-[0.2em] text-muted transition-colors duration-(--dur) group-hover:text-signal group-focus-visible:text-signal";
 
 /**
  * Clause delimiters for result emphasis, earliest match wins. The comma

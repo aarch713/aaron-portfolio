@@ -25,9 +25,9 @@ const LABEL_CLASSES =
 /* Focus ring comes from the global :focus-visible outline (current-2) —
  * never suppressed here; the border shift just reinforces it. */
 const INPUT_CLASSES =
-  "w-full rounded-md border border-line bg-surface p-3 text-bone transition-colors duration-(--dur) focus:border-(--current-2)";
+  "min-h-12 w-full border border-line bg-surface p-3 text-bone transition-colors duration-(--dur) focus:border-current-1";
 
-const ERROR_CLASSES = "mt-2 text-sm text-current-2";
+const ERROR_CLASSES = "mt-2 text-sm text-[#ff8a61]";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -82,6 +82,13 @@ export function ContactForm() {
     setFieldErrors(errors);
     if (Object.keys(errors).length > 0) {
       setStatus("idle");
+      const firstInvalidName = Object.keys(errors)[0] as FieldName;
+      const firstInvalidField = event.currentTarget.elements.namedItem(
+        firstInvalidName,
+      );
+      if (firstInvalidField instanceof HTMLElement) {
+        requestAnimationFrame(() => firstInvalidField.focus());
+      }
       return;
     }
     /* Issues outside the visible fields (honeypot, timestamp) fall through
@@ -107,11 +114,11 @@ export function ContactForm() {
     return (
       <div
         role="status"
-        className="rounded-md border border-line bg-surface p-6"
+        className="border border-current-2 bg-surface p-6"
       >
         <p className="text-bone">
           Message sent — I&apos;ll reply from{" "}
-          <span className="font-mono text-current-2">{profile.email}</span>.
+          <span className="font-mono text-current-2-text">{profile.email}</span>.
         </p>
       </div>
     );
@@ -209,19 +216,11 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={status === "pending"}
-          className="group relative inline-flex min-h-11 cursor-pointer items-center justify-center rounded-full px-6 py-2.5 text-sm font-medium tracking-tight text-ink select-none disabled:cursor-default disabled:opacity-70"
+          className="group relative inline-flex min-h-12 cursor-pointer items-center justify-center border border-current-2 px-6 py-3 font-mono text-xs font-semibold uppercase tracking-[0.14em] text-on-current-2 select-none transition-colors duration-(--dur) hover:text-on-signal disabled:cursor-default disabled:opacity-50"
         >
           <span
             aria-hidden="true"
-            className="absolute -inset-[3px] rounded-full opacity-0 blur-[3px] transition-opacity duration-(--dur) group-hover:opacity-70 group-focus-visible:opacity-70"
-            style={{
-              background:
-                "linear-gradient(100deg, var(--current-1), var(--current-2))",
-            }}
-          />
-          <span
-            aria-hidden="true"
-            className="absolute inset-0 rounded-full bg-bone"
+            className="absolute inset-0 bg-current-2 transition-colors duration-(--dur) group-hover:bg-signal"
           />
           <span className="relative">
             {status === "pending" ? "Sending..." : "Send message"}
@@ -233,7 +232,7 @@ export function ContactForm() {
             Something broke — email me directly at{" "}
             <a
               href={`mailto:${profile.email}`}
-              className="font-mono text-bone underline decoration-line underline-offset-4 transition-colors duration-(--dur) hover:text-current-2"
+              className="font-mono text-bone underline decoration-line underline-offset-4 transition-colors duration-(--dur) hover:text-signal"
             >
               {profile.email}
             </a>

@@ -89,31 +89,31 @@ export function AiShowcase({ paperclip }: { paperclip: PaperclipTileData }) {
     <section
       id="ai"
       aria-labelledby="ai-heading"
-      className="px-6 py-(--space-section) md:px-10 lg:px-32"
+      className="py-(--space-section)"
     >
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-[88rem] px-4 sm:px-8 lg:px-12">
         <SectionHeading
           id="ai-heading"
-          eyebrow="AI, daily"
-          title="AI in the daily flow"
+          eyebrow="04 / Applied AI"
+          title="Useful intelligence, shipped"
         />
 
         <Reveal delay={0.05}>
-          <p className="mt-6 max-w-2xl leading-relaxed text-muted">{INTRO}</p>
+          <p className="mt-8 max-w-3xl text-lg leading-relaxed text-muted">{INTRO}</p>
         </Reveal>
 
-        <div className="mt-14 grid gap-4 md:grid-cols-3 lg:gap-6">
+        <div className="mt-14 grid border-l border-t border-line md:grid-cols-3 lg:mt-20">
           {tiles.map((tile, index) => (
             <Reveal
               key={tile.title}
               delay={index * TILE_STAGGER}
               className="h-full"
             >
-              <article className="flex h-full flex-col border border-line bg-surface p-6 transition-colors duration-(--dur) hover:border-current-1 focus-within:border-current-1 lg:p-8">
+              <article className="flex h-full min-h-96 flex-col border-b border-r border-line bg-surface p-6 transition-colors duration-(--dur) hover:border-signal focus-within:border-signal lg:p-8">
                 <p aria-hidden="true" className="font-mono text-xs text-muted">
                   {String(index + 1).padStart(2, "0")}
                 </p>
-                <h3 className="mt-4 text-lg font-medium tracking-tight text-bone md:text-xl">
+                <h3 className="font-display mt-8 text-2xl font-bold leading-tight tracking-tight text-bone">
                   {tile.title}
                 </h3>
                 {tile.tagline ? (
@@ -132,7 +132,7 @@ export function AiShowcase({ paperclip }: { paperclip: PaperclipTileData }) {
                 {tile.link ? (
                   <Link
                     href={tile.link.href}
-                    className="mt-4 inline-flex items-center gap-2 self-start font-mono text-xs tracking-[0.2em] text-bone uppercase transition-colors duration-(--dur) hover:text-current-2"
+                    className="mt-4 inline-flex items-center gap-2 self-start font-mono text-xs tracking-[0.2em] text-bone uppercase transition-colors duration-(--dur) hover:text-signal"
                   >
                     {tile.link.label}
                     <span className="sr-only"> — {tile.title}</span>

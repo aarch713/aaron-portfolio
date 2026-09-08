@@ -71,7 +71,7 @@ function JobEntry({ job }: { job: Job }) {
   return (
     <li
       data-timeline-item
-      className="relative pb-20 pl-8 last:pb-0 sm:pl-12"
+      className="relative border-b border-line pb-16 pl-8 last:border-b-0 last:pb-0 sm:pl-12"
     >
       <TimelineNode />
 
@@ -79,7 +79,7 @@ function JobEntry({ job }: { job: Job }) {
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted">
           {job.start} – {job.end} · {job.location}
         </p>
-        <h3 className="mt-3 text-2xl font-medium leading-snug text-bone">
+        <h3 className="font-display mt-3 text-3xl font-bold leading-snug tracking-tight text-bone">
           {job.company}
           {job.brand ? <span className="text-muted"> · {job.brand}</span> : null}
         </h3>
@@ -100,7 +100,7 @@ function JobEntry({ job }: { job: Job }) {
 
       {hiddenBullets.length > 0 && (
         <details className="group mt-4 max-w-2xl">
-          <summary className="w-fit cursor-pointer list-none font-mono text-xs uppercase tracking-[0.2em] text-muted transition-colors hover:text-bone [&::-webkit-details-marker]:hidden">
+          <summary className="w-fit cursor-pointer list-none font-mono text-xs uppercase tracking-[0.2em] text-muted transition-colors hover:text-signal [&::-webkit-details-marker]:hidden">
             <span className="group-open:hidden">
               + {hiddenBullets.length} more
             </span>
@@ -194,13 +194,13 @@ export function ExperienceTimeline() {
       aria-labelledby={HEADING_ID}
       style={{ paddingBlock: "var(--space-section)" }}
     >
-      <div className="mx-auto w-full max-w-5xl px-6 sm:px-10 lg:px-16">
+      <div className="mx-auto w-full max-w-[88rem] px-4 sm:px-8 lg:px-12">
         <SectionHeading
-          eyebrow="Experience"
-          title="The ride so far"
+          eyebrow="03 / Experience"
+          title="Where the work happened"
           id={HEADING_ID}
         />
-        <ol ref={listRef} className="relative mt-16 border-l border-line">
+        <ol ref={listRef} className="relative mt-16 max-w-5xl border-l border-line lg:ml-auto lg:mt-20 lg:w-[calc(100%-16rem)]">
           {jobs.map((job) => (
             <JobEntry key={`${job.company}-${job.start}`} job={job} />
           ))}

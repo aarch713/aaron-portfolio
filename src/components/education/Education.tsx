@@ -16,11 +16,11 @@ export function Education() {
       aria-labelledby="education-heading"
       className="py-(--space-section)"
     >
-      <div className="mx-auto max-w-6xl px-6 md:px-10 lg:px-24">
+      <div className="mx-auto max-w-[88rem] px-4 sm:px-8 lg:px-12">
         <SectionHeading
           id="education-heading"
-          eyebrow="Education"
-          title="School & certs"
+          eyebrow="06 / Education"
+          title="Always in progress"
         />
 
         <div className="mt-14 border-t border-line">

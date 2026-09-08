@@ -23,15 +23,9 @@ function splitSummary(summary: string): {
   return { lead, rest: remaining.length > 0 ? remaining.join(" ") : null };
 }
 
-/** Pastel tile tints, one per metric — golden, sky, coral, tangerine. */
-const TILE_TINTS = ["#ffeeba", "#dbeeff", "#ffdde6", "#ffe4cd"];
-/** Playful bento offsets: alternate tiles nudge a little (motion-safe only
- * matters for animation; static rotation is fine for reduced motion). */
-const TILE_TILTS = ["-rotate-1", "rotate-1", "rotate-1", "-rotate-1"];
-
 /**
- * About section: narrative summary (7/12) beside a 2×2 bento of counting
- * metric tiles (5/12), stacked on mobile. All data comes from `profile`.
+ * About section: an editorial profile column followed by a ruled metric row.
+ * All data comes from `profile`.
  */
 export function About() {
   const { lead, rest } = splitSummary(profile.summary);
@@ -42,42 +36,41 @@ export function About() {
       aria-labelledby={HEADING_ID}
       className="py-(--space-section)"
     >
-      <div className="mx-auto w-full max-w-6xl px-6 sm:px-10 lg:px-20">
+      <div className="mx-auto w-full max-w-[88rem] px-4 sm:px-8 lg:px-12">
         <SectionHeading
-          eyebrow="Hey"
-          title="Making the web feel good"
+          eyebrow="01 / Profile"
+          title="Built for real-world momentum"
           id={HEADING_ID}
         />
 
-        <div className="mt-14 grid gap-14 lg:mt-20 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-7">
+        <div className="mt-14 grid gap-10 lg:mt-20 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-16">
+          <p className="font-mono text-xs uppercase leading-relaxed tracking-[0.16em] text-current-1">
+            Frontend systems<br />
+            Ecommerce<br />
+            Applied AI
+          </p>
+          <div className="max-w-4xl">
             <Reveal>
-              <p className="text-xl leading-relaxed text-bone">{lead}</p>
+              <p className="font-display text-2xl font-medium leading-snug tracking-tight text-bone sm:text-4xl">
+                {lead}
+              </p>
             </Reveal>
             {rest ? (
               <Reveal delay={SECOND_PARAGRAPH_DELAY}>
-                <p className="mt-6 leading-relaxed text-muted">{rest}</p>
+                <p className="mt-8 max-w-3xl leading-relaxed text-muted">{rest}</p>
               </Reveal>
             ) : null}
           </div>
+        </div>
 
-          <div className="lg:col-span-5">
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-              {profile.metrics.map((metric, index) => (
-                <Reveal key={metric.label} delay={index * METRIC_STAGGER}>
-                  <div
-                    className={`bento p-6 ${TILE_TILTS[index % TILE_TILTS.length]}`}
-                    style={{
-                      ["--tile" as string]:
-                        TILE_TINTS[index % TILE_TINTS.length],
-                    }}
-                  >
-                    <MetricCounter metric={metric} />
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
+        <div className="mt-16 grid border-l border-t border-line sm:grid-cols-2 lg:grid-cols-4">
+          {profile.metrics.map((metric, index) => (
+            <Reveal key={metric.label} delay={index * METRIC_STAGGER}>
+              <div className="min-h-44 border-b border-r border-line bg-ink p-6 transition-colors duration-(--dur) hover:border-signal">
+                <MetricCounter metric={metric} />
+              </div>
+            </Reveal>
+          ))}
         </div>
       </div>
     </section>

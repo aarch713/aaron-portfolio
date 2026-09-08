@@ -8,24 +8,19 @@ interface SectionHeadingProps {
   id?: string;
 }
 
-/**
- * Section header, golden-hour style: the eyebrow rides in a little die-cut
- * sticker chip, then the Bricolage display H2 at the locked --text-h2 scale.
- * Self-reveals on scroll via Reveal (fully visible under reduced motion /
- * no JS).
- */
+/** Editorial chapter heading: ruled label, then an oversized display title. */
 export function SectionHeading({ eyebrow, title, id }: SectionHeadingProps) {
   return (
-    <div>
+    <div className="border-t border-line pt-5">
       <Reveal>
-        <p className="sticker px-3 py-1 font-mono text-[0.6875rem] uppercase tracking-[0.2em] text-bone w-fit">
+        <p className="editorial-kicker text-current-2-text">
           {eyebrow}
         </p>
         {/* The aria-labelledby target id lives on the h2 itself so the
             section's accessible name is the title alone, not eyebrow+title. */}
         <h2
           id={id}
-          className="font-display mt-5 font-extrabold leading-[1.04] tracking-tight text-bone"
+          className="font-display mt-8 max-w-5xl font-extrabold leading-[0.92] tracking-[-0.045em] text-bone"
           style={{ fontSize: "var(--text-h2)" }}
         >
           {title}

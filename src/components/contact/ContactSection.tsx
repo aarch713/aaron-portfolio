@@ -6,7 +6,7 @@ import { ContactForm } from "@/components/contact/ContactForm";
 const HEADING_ID = "contact-heading";
 
 const LINK_CLASSES =
-  "inline-flex items-center gap-2 text-bone transition-colors duration-(--dur) hover:text-current-2";
+  "inline-flex items-center gap-2 text-bone transition-colors duration-(--dur) hover:text-signal";
 
 /**
  * Contact section: quiet two-column close — a short invitation plus mono
@@ -26,12 +26,16 @@ export function ContactSection() {
       aria-labelledby={HEADING_ID}
       className="py-(--space-section)"
     >
-      <div className="mx-auto w-full max-w-6xl px-6 md:px-10">
-        <SectionHeading eyebrow="Contact" title="Say hello" id={HEADING_ID} />
+      <div className="mx-auto w-full max-w-[88rem] px-4 sm:px-8 lg:px-12">
+        <SectionHeading
+          eyebrow="07 / Contact"
+          title="Let’s make the next thing count"
+          id={HEADING_ID}
+        />
 
-        <div className="mt-14 grid items-start gap-14 lg:mt-20 lg:grid-cols-2 lg:gap-20">
+        <div className="mt-14 grid items-start gap-14 lg:mt-20 lg:grid-cols-[1fr_1.25fr] lg:gap-24">
           <Reveal>
-            <p className="max-w-md text-lg leading-relaxed text-muted">
+            <p className="font-display max-w-md text-3xl font-medium leading-snug tracking-tight text-bone">
               Hiring, or just curious? My inbox is open.
             </p>
             <ul className="mt-10 space-y-4 font-mono text-sm">

@@ -26,12 +26,12 @@ interface MagneticButtonProps {
 /* Min touch target 44px = min-h-11. Focus ring comes from the global
  * :focus-visible outline — never suppressed here. */
 const BASE_CLASSES =
-  "group relative inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full px-6 py-2.5 text-sm font-medium tracking-tight select-none transition-colors duration-(--dur)";
+  "group relative inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 border px-6 py-3 font-mono text-xs font-semibold uppercase tracking-[0.14em] select-none transition-colors duration-(--dur)";
 
 const VARIANT_CLASSES: Record<"solid" | "ghost", string> = {
-  solid: "text-ink",
+  solid: "border-current-2 text-on-current-2 group-hover:text-on-signal",
   ghost:
-    "border border-line text-bone hover:border-(--current-1) focus-visible:border-(--current-1)",
+    "border-line text-bone hover:border-signal hover:bg-signal hover:text-on-signal focus-visible:border-signal",
 };
 
 /**
@@ -111,15 +111,7 @@ export function MagneticButton({
         <>
           <span
             aria-hidden="true"
-            className="absolute -inset-[3px] rounded-full opacity-0 blur-[3px] transition-opacity duration-(--dur) group-hover:opacity-70 group-focus-visible:opacity-70"
-            style={{
-              background:
-                "linear-gradient(100deg, var(--current-1), var(--current-2))",
-            }}
-          />
-          <span
-            aria-hidden="true"
-            className="absolute inset-0 rounded-full bg-bone"
+            className="absolute inset-0 bg-current-2 transition-colors duration-(--dur) group-hover:bg-signal"
           />
         </>
       ) : null}

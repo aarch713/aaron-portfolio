@@ -7,11 +7,10 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { loadGsap, splitChars } from "@/lib/motion";
 
 const HEADING_ID = "hero-heading";
-/** The one word of the role line that gets the golden marker highlight. */
+/** The one word of the role line that receives the editorial accent block. */
 const MARKER_WORD = "Frontend";
 
-/* Springy ease for the pop-in choreography (V5 only — the shared EASE
- * constant stays expo for scroll reveals). */
+/* Springy ease for the opening type choreography. */
 const POP_EASE = "back.out(1.5)";
 
 /* Load choreography (seconds). Everything lands inside 1.6s total. */
@@ -35,15 +34,14 @@ interface GsapContextLike {
   revert(): void;
 }
 
-/** Renders the role line, wrapping the marker word in a golden highlight. */
+/** Renders the role line, wrapping the marker word in the accent block. */
 function renderRole(role: string) {
   return role.split(" ").map((word, index) => (
     <Fragment key={`${word}-${index}`}>
       {index > 0 ? " " : null}
       {word === MARKER_WORD ? (
         <span
-          className="inline-block -rotate-1 rounded-lg px-2"
-          style={{ background: "var(--golden)" }}
+          className="inline-block bg-teal px-2 text-on-teal"
         >
           {word}
         </span>
@@ -55,7 +53,7 @@ function renderRole(role: string) {
 }
 
 /**
- * Full-viewport golden-hour intro. Server output is fully visible (no CSS
+ * Full-viewport editorial intro. Server output is fully visible (no CSS
  * hidden states), so content reads with JS disabled. On the client,
  * useLayoutEffect kicks off the shared GSAP loader; nothing is hidden until
  * it resolves, so the painted hero never blanks out during the chunk fetch.
@@ -177,68 +175,79 @@ export function Hero() {
     <section
       ref={sectionRef}
       aria-labelledby={HEADING_ID}
-      className="relative flex min-h-svh flex-col justify-center px-6 py-24 sm:px-10 lg:px-24"
+      className="relative flex min-h-dvh flex-col justify-center border-b border-line px-4 pb-16 pt-28 sm:px-8 lg:px-12 lg:pb-10"
     >
-      <div className="mx-auto w-full max-w-6xl">
-        <p
-          ref={eyebrowRef}
-          className="flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.25em] text-muted"
-        >
-          <span
-            aria-hidden="true"
-            className="inline-block h-2.5 w-2.5 rounded-full"
-            style={{
-              background: "var(--golden)",
-              boxShadow: "0 0 0 3px rgba(255, 197, 50, 0.35)",
-            }}
-          />
-          {profile.location} — Open to full-time roles
-        </p>
+      <div className="mx-auto grid w-full max-w-[96rem] gap-12 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end lg:gap-16">
+        <div>
+          <p
+            ref={eyebrowRef}
+            className="editorial-kicker text-current-2-text"
+          >
+            {profile.location} / Available for roles
+          </p>
 
-        <h1
-          ref={nameRef}
-          id={HEADING_ID}
-          className="font-display mt-7 font-extrabold leading-[0.98] tracking-tight text-bone"
-          style={{ fontSize: "var(--text-hero)" }}
-        >
-          {profile.name}
-        </h1>
+          <h1
+            ref={nameRef}
+            id={HEADING_ID}
+            className="font-display mt-9 max-w-[8ch] font-extrabold leading-[0.76] tracking-[-0.065em] text-bone"
+            style={{ fontSize: "var(--text-hero)" }}
+          >
+            {profile.name}
+          </h1>
 
-        <p
-          ref={roleRef}
-          className="font-display mt-7 text-2xl font-bold tracking-tight text-bone sm:text-3xl"
-        >
-          {renderRole(profile.role)}
-        </p>
+          <p
+            ref={roleRef}
+            className="font-display mt-10 text-2xl font-bold tracking-tight text-bone sm:text-4xl"
+          >
+            {renderRole(profile.role)}
+          </p>
 
-        <p ref={headlineRef} className="mt-4 max-w-xl text-muted">
-          {profile.headline} — and feel a little joyful while it converts.
-        </p>
-
-        <div ref={ctasRef} className="mt-10 flex flex-wrap items-center gap-4">
-          <MagneticButton href={profile.resumePdf} download>
-            Download resume
-          </MagneticButton>
-          <MagneticButton href="#projects" variant="ghost">
-            See the work
-          </MagneticButton>
+          <p
+            ref={headlineRef}
+            className="mt-5 max-w-2xl text-lg leading-relaxed text-muted"
+          >
+            {profile.headline}. Fast systems, thoughtful interactions, and
+            digital commerce built to earn attention.
+          </p>
         </div>
+
+        <aside className="border border-line bg-surface" aria-label="Portfolio summary">
+          <p className="border-b border-line bg-current-2 px-5 py-3 font-mono text-xs font-semibold uppercase tracking-[0.18em] text-on-current-2">
+            Field notes / 2026
+          </p>
+          <dl className="grid grid-cols-2 font-mono text-xs lg:grid-cols-1">
+            <div className="border-b border-r border-line p-5 lg:border-r-0">
+              <dt className="uppercase tracking-[0.16em] text-muted">Focus</dt>
+              <dd className="mt-2 text-bone">Commerce + AI</dd>
+            </div>
+            <div className="border-b border-line p-5">
+              <dt className="uppercase tracking-[0.16em] text-muted">Stack</dt>
+              <dd className="mt-2 text-bone">React / Next.js</dd>
+            </div>
+          </dl>
+          <div ref={ctasRef} className="grid gap-px bg-line p-px">
+            <MagneticButton href="#projects">Explore selected work</MagneticButton>
+            <MagneticButton href={profile.resumePdf} download variant="ghost">
+              Download resume
+            </MagneticButton>
+          </div>
+        </aside>
       </div>
 
       {/* Decorative scroll cue — hidden from AT, breathes via scaleY loop. */}
       <div
         ref={cueRef}
         aria-hidden="true"
-        className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3"
+        className="absolute bottom-5 right-12 hidden items-center gap-3 lg:flex"
       >
         <span className="font-mono text-[0.625rem] uppercase tracking-[0.3em] text-muted">
           scroll
         </span>
         <span
           ref={cueLineRef}
-          className="block h-12 w-px origin-top"
+          className="block h-px w-16 origin-left"
           style={{
-            background: "linear-gradient(to bottom, var(--muted), transparent)",
+            background: "linear-gradient(to right, var(--muted), transparent)",
           }}
         />
       </div>

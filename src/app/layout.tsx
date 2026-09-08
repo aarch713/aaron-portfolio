@@ -2,13 +2,12 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/react";
 import { ChatWidget } from "@/components/chat/ChatWidget";
-import { SunArc } from "@/components/current/SunArc";
 import { profile } from "@/content/profile";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
-/* V5 "Golden Hour" type pairing: Bricolage Grotesque carries the chunky,
- * warm display voice; Inter carries body prose. Both variable, self-hosted. */
+/* V6 editorial pairing: Bricolage supplies expressive display typography,
+ * while Inter keeps long-form content highly readable. Both are self-hosted. */
 const bricolage = localFont({
   src: "../../public/fonts/bricolage-var.woff2",
   variable: "--font-bricolage",
@@ -25,6 +24,15 @@ const inter = localFont({
 
 const DESCRIPTION =
   "Frontend developer making commerce feel fast — design systems, accessible React/TypeScript UI, and Core Web Vitals wins across two live storefronts.";
+
+const THEME_BOOTSTRAP_SCRIPT = `
+  try {
+    const theme = localStorage.getItem("portfolio-theme");
+    if (theme === "light" || theme === "dark") {
+      document.documentElement.dataset.theme = theme;
+    }
+  } catch {}
+`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -66,10 +74,14 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${bricolage.variable} ${inter.variable}`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${bricolage.variable} ${inter.variable}`}
+    >
       <body className="bg-ink text-bone">
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP_SCRIPT }} />
         {children}
-        <SunArc />
         <ChatWidget />
         <script
           type="application/ld+json"

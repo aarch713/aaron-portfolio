@@ -20,7 +20,7 @@ interface ProjectCardProps {
   index: number;
 }
 
-/** Accent sunset cycle for the card top bars. */
+/** Editorial accent cycle for project rules and ordinals. */
 const ACCENTS = [
   "var(--golden)",
   "var(--sky)",
@@ -33,11 +33,8 @@ function formatMetric(metric: ProjectCardData["metric"]): string {
 }
 
 /**
- * One project as a chunky bento card: hard offset shadow, an accent color
- * bar on top (sunset cycle), Bricolage title, sticker stack chips. The whole
- * card links to the case-study page; hover/focus lifts it slightly
- * (transform only, gated behind motion-safe). Keyboard focus gets the global
- * :focus-visible outline.
+ * One project as a ruled editorial story. The full surface links to the case
+ * study and gains a clear color inversion on hover and keyboard focus.
  */
 export function ProjectCard({ item, index }: ProjectCardProps) {
   const ordinal = String(index + 1).padStart(2, "0");
@@ -47,50 +44,47 @@ export function ProjectCard({ item, index }: ProjectCardProps) {
   return (
     <Link
       href={`/projects/${item.slug}`}
-      className="bento group flex h-full w-[min(85vw,32rem)] flex-col overflow-hidden transition-transform duration-300 ease-[var(--ease-out-expo)] motion-safe:hover:-translate-y-1.5 motion-safe:hover:rotate-[0.4deg] motion-safe:focus-visible:-translate-y-1.5"
+      className="group relative flex h-full min-h-[28rem] flex-col border-b border-r border-line bg-ink transition-colors duration-(--dur) hover:bg-signal hover:text-on-signal focus-visible:bg-signal focus-visible:text-on-signal"
     >
       <span
         aria-hidden="true"
-        className="block h-2.5 w-full"
-        style={{ background: accent }}
+        className="absolute h-1 w-20"
+        style={{ backgroundColor: accent }}
       />
-      <div className="flex grow flex-col p-8">
-        <p className="flex items-center justify-between font-mono text-xs tracking-[0.25em] text-muted">
-          <span>{ordinal}</span>
-          <span
-            aria-hidden="true"
-            className="inline-block h-3 w-3 rounded-full"
-            style={{ background: accent }}
-          />
+      <div className="flex min-w-0 flex-col p-6 sm:p-9">
+        <p className="font-mono text-xs uppercase tracking-[0.25em] text-muted group-hover:text-on-signal/70 group-focus-visible:text-on-signal/70">
+          Project / {ordinal}
         </p>
 
-        <h3 className="font-display mt-6 text-3xl font-extrabold leading-tight tracking-tight text-bone">
+        <h3 className="font-display mt-10 max-w-xl text-4xl font-extrabold leading-[0.95] tracking-[-0.04em] text-bone group-hover:text-on-signal group-focus-visible:text-on-signal sm:text-5xl">
           {item.title}
         </h3>
-        <p className="mt-3 text-muted">{item.tagline}</p>
+        <p className="mt-5 max-w-xl text-muted group-hover:text-on-signal/75 group-focus-visible:text-on-signal/75">
+          {item.tagline}
+        </p>
 
         <ul aria-label="Stack" className="mt-6 flex flex-wrap gap-2">
           {item.stack.map((stackItem) => (
             <li
               key={stackItem}
-              className="sticker px-2.5 py-0.5 font-mono text-xs text-bone"
+              className="border border-line px-2.5 py-1 font-mono text-xs text-muted group-hover:border-on-signal/25 group-hover:text-on-signal group-focus-visible:border-on-signal/25 group-focus-visible:text-on-signal"
             >
               {stackItem}
             </li>
           ))}
         </ul>
 
-        <p className="mt-8">
-          <span className="font-display text-4xl font-extrabold tracking-tight text-bone sm:text-5xl">
+        <p className="mt-10 border-t border-line pt-6 group-hover:border-on-signal/25 group-focus-visible:border-on-signal/25">
+          <span className="font-display text-5xl font-extrabold tracking-[-0.04em] text-bone group-hover:text-on-signal group-focus-visible:text-on-signal sm:text-6xl">
             {formatMetric(headlineMetric)}
           </span>
-          <span className="mt-2 block font-mono text-xs uppercase tracking-[0.2em] text-muted">
+          <span className="mt-2 block font-mono text-xs uppercase tracking-[0.16em] text-muted group-hover:text-on-signal/70 group-focus-visible:text-on-signal/70">
             {headlineMetric.label}
           </span>
         </p>
 
-        <p className="mt-auto pt-8 font-mono text-xs uppercase tracking-[0.2em] text-muted transition-colors duration-300 group-hover:text-current-1">
-          Case study <span aria-hidden="true">&rarr;</span>
+        <p className="mt-auto pt-10 font-mono text-xs font-semibold uppercase tracking-[0.18em] text-current-2-text group-hover:text-on-signal group-focus-visible:text-on-signal">
+          Open case study <span aria-hidden="true">↗</span>
         </p>
       </div>
     </Link>

@@ -1,37 +1,88 @@
 @import "tailwindcss";
 
 /*
- * V5 — "Golden Hour" (SoCal pop, vibrant light).
- * The token CONTRACT is shared with every design version: --ink is the page
- * canvas, --bone the primary text, --surface the card fill, --line the
- * hairline, --muted the secondary text, --current-1/2 the accent pair.
- * Here the canvas is warm white, text is deep indigo, and the accent pair is
- * coral → tangerine, with golden and sky as supporting section accents.
+ * V6 — "Field Notes". A high-contrast editorial system built around a
+ * visible page grid, hard rules, oversized type, and two electric accents.
+ * Existing semantic tokens stay stable so case studies share the redesign.
  */
 :root {
-  --ink: #fff9f0; /* warm white canvas */
-  --surface: #ffffff; /* white card */
-  --line: #eadfce; /* warm hairline */
-  --bone: #221c4e; /* deep indigo text */
-  --muted: #625d86; /* dusk indigo secondary */
-  --current-1: #e42f63; /* coral (AA on warm white) */
-  --current-2: #d95a00; /* tangerine (AA on warm white) */
-  --golden: #ffc532; /* golden accent (fills only) */
-  --sky: #7ac7ff; /* sky accent (fills only) */
-  --coral-fill: #ff3d71; /* vivid coral for fills/gradients */
-  --tangerine-fill: #ff7a29; /* vivid tangerine for fills/gradients */
+  color-scheme: dark;
+  --ink: #111210;
+  --surface: #1a1c18;
+  --line: #3f433b;
+  --bone: #f4f1e8;
+  --muted: #b8b8ae;
+  --current-1: #9aabff;
+  --current-2: #173b8f;
+  --current-2-text: #8da9ff;
+  --on-current-2: #f5f2e8;
+  --teal: #2dd4bf;
+  --on-teal: #111210;
+  --signal: #ffe500;
+  --on-signal: #111210;
+  --golden: #ffe500;
+  --sky: #9aabff;
+  --coral-fill: #ff6b35;
+  --tangerine-fill: #ffb000;
+  --grid-color: rgba(244, 241, 232, 0.055);
+  --glow-color: rgba(154, 171, 255, 0.12);
 
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-
-  --text-hero: clamp(3rem, 1rem + 8.6vw, 8rem);
-  --text-h2: clamp(2rem, 1rem + 4vw, 4.25rem);
-  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
-
-  --space-section: clamp(5rem, 3rem + 8vw, 12rem);
-
-  --dur-fast: 150ms;
-  --dur: 300ms;
+  --text-hero: clamp(4rem, 0.5rem + 13vw, 11.5rem);
+  --text-h2: clamp(2.75rem, 1.25rem + 5vw, 6rem);
+  --text-base: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+  --space-section: clamp(6rem, 3rem + 8vw, 11rem);
+  --dur-fast: 140ms;
+  --dur: 240ms;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --ink: #f5f2e8;
+  --surface: #fffdf7;
+  --line: #b8b5aa;
+  --bone: #171815;
+  --muted: #55574f;
+  --current-1: #334ac0;
+  --current-2: #173b8f;
+  --current-2-text: #173b8f;
+  --on-current-2: #fffdf7;
+  --teal: #0f766e;
+  --on-teal: #fffdf7;
+  --signal: #ffe500;
+  --on-signal: #111210;
+  --golden: #b28a00;
+  --sky: #334ac0;
+  --coral-fill: #b63f1c;
+  --tangerine-fill: #8d5200;
+  --grid-color: rgba(23, 24, 21, 0.075);
+  --glow-color: rgba(51, 74, 192, 0.1);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    color-scheme: light;
+    --ink: #f5f2e8;
+    --surface: #fffdf7;
+    --line: #b8b5aa;
+    --bone: #171815;
+    --muted: #55574f;
+    --current-1: #334ac0;
+    --current-2: #173b8f;
+    --current-2-text: #173b8f;
+    --on-current-2: #fffdf7;
+    --teal: #0f766e;
+    --on-teal: #fffdf7;
+    --signal: #ffe500;
+    --on-signal: #111210;
+    --golden: #b28a00;
+    --sky: #334ac0;
+    --coral-fill: #b63f1c;
+    --tangerine-fill: #8d5200;
+    --grid-color: rgba(23, 24, 21, 0.075);
+    --glow-color: rgba(51, 74, 192, 0.1);
+  }
 }
 
 @theme inline {
@@ -42,10 +93,16 @@
   --color-muted: var(--muted);
   --color-current-1: var(--current-1);
   --color-current-2: var(--current-2);
+  --color-current-2-text: var(--current-2-text);
+  --color-on-current-2: var(--on-current-2);
+  --color-teal: var(--teal);
+  --color-on-teal: var(--on-teal);
+  --color-signal: var(--signal);
+  --color-on-signal: var(--on-signal);
   --color-golden: var(--golden);
   --color-sky: var(--sky);
   --font-sans: var(--font-grotesk), system-ui, sans-serif;
-  --font-display: var(--font-bricolage), "Arial Rounded MT Bold", system-ui, sans-serif;
+  --font-display: var(--font-bricolage), system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
@@ -53,65 +110,92 @@ html {
   background: var(--ink);
   color: var(--bone);
   scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  min-width: 320px;
+  overflow-x: clip;
+  font-family: var(--font-grotesk), system-ui, sans-serif;
+  font-size: var(--text-base);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    linear-gradient(to right, transparent calc(100% - 1px), var(--grid-color) 1px),
+    radial-gradient(circle at 82% 8%, var(--glow-color), transparent 24rem);
+  background-size: min(25vw, 22rem) 100%, auto;
+  transition:
+    background-color var(--dur) var(--ease-out-expo),
+    color var(--dur) var(--ease-out-expo);
+}
+
+::selection {
+  background: var(--signal);
+  color: var(--on-signal);
+}
+
+:focus-visible {
+  outline: 3px solid var(--signal);
+  outline-offset: 4px;
+}
+
+:root.theme-transition,
+:root.theme-transition *,
+:root.theme-transition *::before,
+:root.theme-transition *::after {
+  transition-property: background-color, border-color, color, fill, stroke !important;
+  transition-duration: 0.5s !important;
+  transition-timing-function: ease-in-out !important;
+}
+
+.font-display {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+}
+
+.text-current-gradient {
+  color: var(--current-1);
+}
+
+.sticker {
+  display: inline-block;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.editorial-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.editorial-kicker::before {
+  width: 2.5rem;
+  height: 2px;
+  background: currentColor;
+  content: "";
 }
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
+
+  :root.theme-transition,
+  :root.theme-transition *,
+  :root.theme-transition *::before,
+  :root.theme-transition *::after {
+    transition-duration: 0s !important;
+  }
 }
 
-body {
-  font-family: var(--font-grotesk), system-ui, sans-serif;
-  font-size: var(--text-base);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  /* Golden-hour wash: low sun glow rising from the horizon line. */
-  background-image:
-    radial-gradient(58rem 30rem at 82% -6rem, rgba(255, 197, 50, 0.16), transparent 70%),
-    radial-gradient(44rem 26rem at -6% 30rem, rgba(255, 61, 113, 0.07), transparent 70%);
-  background-repeat: no-repeat;
-}
-
-::selection {
-  background: var(--coral-fill);
-  color: #fff9f0;
-}
-
-:focus-visible {
-  outline: 2px solid var(--current-1);
-  outline-offset: 3px;
-  border-radius: 4px;
-}
-
-/* Display face — Bricolage carries the warm, chunky voice. */
-.font-display {
-  font-family: var(--font-bricolage), "Arial Rounded MT Bold", system-ui, sans-serif;
-}
-
-/* Accent gradient text helper (coral → tangerine sunset). */
-.text-current-gradient {
-  background: linear-gradient(100deg, var(--current-1), var(--current-2));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-/* Sticker chip: chunky white pill with an indigo keyline and a hard, tiny
- * shadow — like a die-cut sticker on the page. */
-.sticker {
-  display: inline-block;
-  border: 1.5px solid var(--bone);
-  border-radius: 9999px;
-  background: var(--surface);
-  box-shadow: 2px 2px 0 0 var(--bone);
-}
-
-/* Bento tile: soft-rounded card with a hard offset shadow. Tint it with a
- * --tile background override per instance. */
-.bento {
-  border: 1.5px solid var(--bone);
-  border-radius: 1.25rem;
-  background: var(--tile, var(--surface));
-  box-shadow: 4px 4px 0 0 var(--bone);
+@media (max-width: 639px) {
+  body {
+    background-size: 50vw 100%, auto;
+  }
 }

@@ -251,7 +251,7 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
           type="button"
           onClick={onClose}
           aria-label="Close chat"
-          className="flex h-11 w-11 cursor-pointer items-center justify-center text-lg text-muted transition-colors duration-(--dur) hover:text-bone"
+          className="flex h-11 w-11 cursor-pointer items-center justify-center text-lg text-muted transition-colors duration-(--dur) hover:text-signal"
         >
           &times;
         </button>
@@ -275,7 +275,7 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
                 key={question}
                 type="button"
                 onClick={() => void send(question)}
-                className="min-h-11 cursor-pointer rounded-full border border-line px-4 py-2 text-left font-mono text-xs text-bone transition-colors duration-(--dur) hover:border-current-1"
+                className="min-h-11 cursor-pointer rounded-full border border-line px-4 py-2 text-left font-mono text-xs text-bone transition-colors duration-(--dur) hover:border-signal hover:text-signal"
               >
                 {question}
               </button>
@@ -313,7 +313,7 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
                     {" "}
                     <a
                       href={RESUME_PDF}
-                      className="text-bone underline decoration-line underline-offset-4 transition-colors duration-(--dur) hover:text-current-2"
+                      className="text-bone underline decoration-line underline-offset-4 transition-colors duration-(--dur) hover:text-signal"
                     >
                       Download the resume PDF
                     </a>
@@ -349,7 +349,7 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
         <button
           type="submit"
           disabled={isStreaming}
-          className="min-h-11 cursor-pointer rounded-md border border-line px-4 font-mono text-xs text-bone transition-colors duration-(--dur) hover:border-current-1 disabled:cursor-default disabled:opacity-60"
+          className="min-h-11 cursor-pointer rounded-md border border-line px-4 font-mono text-xs text-bone transition-colors duration-(--dur) hover:border-signal hover:text-signal disabled:cursor-default disabled:opacity-60"
         >
           {isStreaming ? "..." : "Send"}
         </button>

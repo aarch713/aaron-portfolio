@@ -58,8 +58,8 @@ export default function Home() {
       <main id="main">
         <Hero />
         <About />
-        <ExperienceTimeline />
         <ProjectsRail items={projectCards} />
+        <ExperienceTimeline />
         <AiShowcase paperclip={paperclipTile} />
         <SkillsGrid />
         <Education />

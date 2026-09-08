@@ -1,15 +1,8 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { profile } from "@/content/profile";
-import { useReducedMotion } from "@/hooks/useReducedMotion";
-
-/** Fraction of viewport height scrolled before the bar reveals. */
-const REVEAL_VIEWPORT_FRACTION = 0.8;
-/** Reduced motion: reveal after any real scroll instead of a viewport ratio. */
-const REDUCED_MOTION_THRESHOLD_PX = 200;
+import { ThemeToggle } from "@/components/nav/ThemeToggle";
 
 const ANCHOR_LINKS = [
+  { label: "Index", href: "#about" },
   { label: "Work", href: "#projects" },
   { label: "Experience", href: "#experience" },
   { label: "Contact", href: "#contact" },
@@ -22,51 +15,12 @@ function initialsOf(name: string): string {
     .join("");
 }
 
-/**
- * Fixed top bar. Server output is fully visible (no-JS fallback); on the
- * client a passive scroll listener hides it until the page is scrolled past
- * ~80vh (200px under reduced motion), toggling only transform + opacity.
- * `focus-within` overrides keep it usable the moment anything inside it —
- * including the skip link — receives keyboard focus.
- */
+/** Persistent editorial masthead with direct access to every key chapter. */
 export function SiteNav() {
-  const prefersReducedMotion = useReducedMotion();
-  const [isVisible, setIsVisible] = useState(true);
-
-  useEffect(() => {
-    let frame = 0;
-
-    const update = () => {
-      frame = 0;
-      const threshold = prefersReducedMotion
-        ? REDUCED_MOTION_THRESHOLD_PX
-        : window.innerHeight * REVEAL_VIEWPORT_FRACTION;
-      setIsVisible(window.scrollY > threshold);
-    };
-
-    const onScroll = () => {
-      if (frame === 0) frame = requestAnimationFrame(update);
-    };
-
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (frame !== 0) cancelAnimationFrame(frame);
-    };
-  }, [prefersReducedMotion]);
-
-  const stateClasses = isVisible
-    ? "translate-y-0 opacity-100"
-    : "pointer-events-none -translate-y-4 opacity-0";
-
   return (
     <nav
       aria-label="Primary"
-      className={`fixed inset-x-0 top-0 z-40 border-b border-line bg-ink/80 backdrop-blur transition-[transform,opacity] duration-(--dur) ease-(--ease-out-expo) motion-reduce:transition-none focus-within:pointer-events-auto focus-within:translate-y-0 focus-within:opacity-100 ${stateClasses}`}
+      className="fixed inset-x-0 top-0 z-40 border-b border-line bg-ink/95 backdrop-blur-sm"
     >
       <a
         href="#main"
@@ -75,22 +29,22 @@ export function SiteNav() {
         Skip to content
       </a>
 
-      <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-6 sm:px-10 lg:px-20">
+      <div className="mx-auto grid min-h-16 w-full max-w-[96rem] grid-cols-[1fr_auto] items-center px-4 sm:px-8 lg:grid-cols-[16rem_1fr_auto] lg:px-12">
         <a
           href="#"
-          className="font-mono text-sm tracking-tight text-bone transition-colors duration-(--dur) hover:text-muted"
+          className="flex min-h-11 items-center font-mono text-xs font-semibold uppercase tracking-[0.18em] text-bone transition-colors duration-(--dur) hover:text-signal"
         >
           {initialsOf(profile.name)}
-          <span className="hidden sm:inline"> — {profile.name}</span>
+          <span className="hidden sm:inline"> / Portfolio 2026</span>
         </a>
 
-        <div className="flex items-center gap-8">
-          <ul className="hidden items-center gap-8 md:flex">
+        <div className="contents">
+          <ul className="hidden items-center gap-7 lg:flex">
             {ANCHOR_LINKS.map((link) => (
               <li key={link.href}>
                 <a
                   href={link.href}
-                  className="font-mono text-sm text-muted transition-colors duration-(--dur) hover:text-bone"
+                  className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-[0.14em] text-muted transition-colors duration-(--dur) hover:text-signal"
                 >
                   {link.label}
                 </a>
@@ -98,13 +52,16 @@ export function SiteNav() {
             ))}
           </ul>
 
-          <a
-            href={profile.resumePdf}
-            download
-            className="inline-flex min-h-9 items-center rounded-full bg-bone px-4 font-mono text-xs font-medium tracking-tight text-ink transition-opacity duration-(--dur) hover:opacity-85"
-          >
-            Resume
-          </a>
+          <div className="flex self-stretch">
+            <ThemeToggle />
+            <a
+              href={profile.resumePdf}
+              download
+              className="inline-flex min-h-12 items-center border-l border-line bg-current-2 px-4 font-mono text-xs font-semibold uppercase tracking-[0.14em] text-on-current-2 transition-colors duration-(--dur) hover:bg-signal hover:text-on-signal sm:px-5"
+            >
+              Resume
+            </a>
+          </div>
         </div>
       </div>
     </nav>

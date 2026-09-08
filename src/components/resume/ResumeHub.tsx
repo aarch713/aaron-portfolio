@@ -12,13 +12,13 @@ export function ResumeHub() {
     <section
       id="resume"
       aria-labelledby="resume-heading"
-      className="border-y border-line bg-ink"
+      className="border-y border-line bg-current-1 text-ink"
     >
-      <div className="mx-auto flex max-w-6xl flex-col items-start gap-10 px-6 py-20 md:flex-row md:items-center md:justify-between md:px-10 md:py-28 lg:px-24">
+      <div className="mx-auto flex max-w-[88rem] flex-col items-start gap-10 px-4 py-20 sm:px-8 md:flex-row md:items-center md:justify-between md:py-24 lg:px-12">
         <Reveal>
           <h2
             id="resume-heading"
-            className="font-display font-extrabold leading-[1.06] tracking-tight text-bone"
+            className="font-display font-extrabold leading-[0.95] tracking-[-0.04em] text-ink"
             style={{ fontSize: "var(--text-h2)" }}
           >
             Need the one-pager?
@@ -27,10 +27,15 @@ export function ResumeHub() {
 
         <Reveal delay={0.12} className="shrink-0">
           <div className="flex flex-col items-start gap-4 md:items-end">
-            <MagneticButton variant="solid" href={profile.resumePdf} download>
+            <MagneticButton
+              variant="ghost"
+              href={profile.resumePdf}
+              download
+              className="border-ink text-ink hover:border-signal hover:bg-signal hover:text-on-signal"
+            >
               Download resume
             </MagneticButton>
-            <p className="font-mono text-xs tracking-[0.15em] text-muted">
+            <p className="font-mono text-xs tracking-[0.15em] text-ink">
               PDF — updated Jul 2026
             </p>
           </div>

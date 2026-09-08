@@ -36,7 +36,7 @@ const CONTACT_LINKS = [
 export function Footer() {
   return (
     <footer className="border-t border-line">
-      <div className="mx-auto w-full max-w-6xl px-6 py-16 sm:px-10 lg:px-20">
+      <div className="mx-auto w-full max-w-[88rem] px-4 py-16 sm:px-8 lg:px-12">
         <ul className="grid gap-10 sm:grid-cols-3">
           {CONTACT_LINKS.map((link) => (
             <li key={link.label}>
@@ -47,7 +47,7 @@ export function Footer() {
                 href={link.href}
                 target={link.external ? "_blank" : undefined}
                 rel={link.external ? "noopener noreferrer" : undefined}
-                className="mt-2 inline-block font-mono text-sm text-bone underline-offset-4 transition-colors duration-(--dur) hover:text-muted hover:underline"
+                className="mt-2 inline-block font-mono text-sm text-bone underline-offset-4 transition-colors duration-(--dur) hover:text-signal hover:underline"
               >
                 {link.text}
               </a>
@@ -62,7 +62,7 @@ export function Footer() {
               href={SOURCE_REPO_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-bone underline decoration-line underline-offset-4 transition-colors duration-(--dur) hover:text-muted"
+              className="text-bone underline decoration-line underline-offset-4 transition-colors duration-(--dur) hover:text-signal"
             >
               view source on GitHub
             </a>

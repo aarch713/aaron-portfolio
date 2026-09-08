@@ -16,11 +16,11 @@ export function SkillsGrid() {
       aria-labelledby="skills-heading"
       className="py-(--space-section)"
     >
-      <div className="mx-auto max-w-6xl px-6 md:px-10 lg:px-24">
+      <div className="mx-auto max-w-[88rem] px-4 sm:px-8 lg:px-12">
         <SectionHeading
           id="skills-heading"
-          eyebrow="Toolbox"
-          title="The toolkit"
+          eyebrow="05 / Capabilities"
+          title="Tools with a point of view"
         />
 
         <div className="mt-14 border-t border-line">
@@ -31,10 +31,10 @@ export function SkillsGrid() {
                   {group.label}
                 </h3>
                 <ul className="flex flex-wrap gap-2">
-                  {group.items.map((item, itemIndex) => (
+                  {group.items.map((item) => (
                     <li
                       key={item}
-                      className={`sticker px-3 py-1 font-mono text-sm text-bone transition-transform duration-(--dur) motion-safe:hover:-translate-y-0.5 ${itemIndex % 3 === 1 ? "rotate-1" : itemIndex % 3 === 2 ? "-rotate-1" : ""}`}
+                      className="sticker px-3 py-1 font-mono text-sm text-bone transition-colors duration-(--dur) hover:border-signal hover:text-signal"
                     >
                       {item}
                     </li>

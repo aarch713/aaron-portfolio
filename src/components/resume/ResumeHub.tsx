@@ -31,7 +31,7 @@ export function ResumeHub() {
               Download resume
             </MagneticButton>
             <p className="font-mono text-xs tracking-[0.15em] text-muted">
-              PDF — updated Jul 2026
+              PDF — updated Sep 21, 2026
             </p>
           </div>
         </Reveal>

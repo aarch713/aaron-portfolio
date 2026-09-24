@@ -10,7 +10,11 @@ import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
-const MODEL = "claude-haiku-4-5-20251001";
+/* AI Gateway serves the Anthropic Messages format unchanged, so the SDK, the
+ * streaming loop and the event shapes below stay exactly as they were. Only
+ * the host, the credential and the model ID move. */
+const GATEWAY_BASE_URL = "https://ai-gateway.vercel.sh";
+const MODEL = "anthropic/claude-haiku-4.5";
 const MAX_TOKENS = 512;
 const RATE_LIMIT_MAX = 10;
 const RATE_LIMIT_WINDOW_MS = 10 * 60_000;
@@ -74,11 +78,14 @@ export async function POST(request: Request): Promise<Response> {
     return NextResponse.json({ fallback: RATE_FALLBACK }, { status: 429 });
   }
 
-  if (!process.env.ANTHROPIC_API_KEY || !checkDailyCap()) {
+  if (!process.env.AI_GATEWAY_API_KEY || !checkDailyCap()) {
     return NextResponse.json({ fallback: RESTING_FALLBACK }, { status: 200 });
   }
 
-  const anthropic = new Anthropic();
+  const anthropic = new Anthropic({
+    baseURL: GATEWAY_BASE_URL,
+    apiKey: process.env.AI_GATEWAY_API_KEY,
+  });
   const messageStream = anthropic.messages.stream({
     model: MODEL,
     max_tokens: MAX_TOKENS,

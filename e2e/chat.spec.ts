@@ -32,7 +32,7 @@ test.describe("chat widget", () => {
     }
   });
 
-  test("sending a message without ANTHROPIC_API_KEY shows fallback with resume link", async ({
+  test("sending a message without AI_GATEWAY_API_KEY shows fallback with resume link", async ({
     page,
   }) => {
     await page.goto("/");

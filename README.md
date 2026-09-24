@@ -26,7 +26,7 @@ Vercel → Project → Settings → Environment Variables for production.
 |---|---|---|
 | `RESEND_API_KEY` | Contact-form email delivery | resend.com → API Keys (free tier) |
 | `CONTACT_TO_EMAIL` | Recipient inbox | defaults to aarch713@gmail.com |
-| `ANTHROPIC_API_KEY` | "Ask my resume" chat | console.anthropic.com (chat is capped at 200 req/day + 10/IP/10min) |
+| `AI_GATEWAY_API_KEY` | "Ask my resume" chat | Vercel AI Gateway → API Keys (chat is capped at 200 req/day + 10/IP/10min) |
 | `NEXT_PUBLIC_SITE_URL` | Canonical URL for SEO | set to the production domain, e.g. https://aaronchai.dev |
 
 ## Deploy (Vercel)
